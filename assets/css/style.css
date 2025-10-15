@@ -211,7 +211,7 @@ img {
 
 .numbers-section {
     position: relative;
-    min-height: 100vh;
+    min-height: 90vh;
     overflow: hidden;
 }
 
@@ -245,12 +245,12 @@ img {
 /* Watermark de fundo - exatamente como no Figma */
 .numbers-watermark-bg {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 65%;
+    left: 30%;
     transform: translate(-50%, -50%);
     z-index: 2;
     pointer-events: none;
-    text-align: center;
+    text-align: left;
 }
 
 .watermark-word {
@@ -262,7 +262,7 @@ img {
     text-transform: uppercase;
     color: rgba(78, 193, 182, 0.6);
     mix-blend-mode: overlay;
-    opacity: 0.8;
+    opacity: 0.2;
     letter-spacing: 0.1em;
     margin: 0;
 }
@@ -498,7 +498,7 @@ img {
 .about-arrow {
     position: absolute;
     top: 260px;
-    right: -80px;
+    right: 200px;
     width: 115px;
     height: 101px;
     z-index: 10;
