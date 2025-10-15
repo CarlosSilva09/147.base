@@ -5,11 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('GSAP Loaded:', typeof gsap !== 'undefined');
     
     // ====================================
-    // Hero Section Animations
+    // Hero Section Animations - NOVA ESTRUTURA
     // ====================================
     
-    // Logo fade in with rotation
-    gsap.from('.hero-logo', {
+    // Logo pequeno fade in
+    gsap.from('.hero-logo-small', {
         opacity: 0,
         y: -50,
         rotation: -20,
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'back.out(1.7)'
     });
 
-    // Hero title animation - word by word
+    // Hero title animation - palavra por palavra
     gsap.from('.hero-title', {
         opacity: 0,
         y: 100,
@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power3.out'
     });
 
-    // Giant "147" logo with slide
-    gsap.from('.hero-147-logo', {
+    // Elemento 147 vermelho
+    gsap.from('.hero-147-element', {
         opacity: 0,
         x: -150,
         scale: 0.9,
@@ -36,8 +36,18 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
-    // Hero image with dramatic entrance
-    gsap.from('.hero-image', {
+    // Círculo amarelo com ícone
+    gsap.from('.hero-yellow-circle', {
+        opacity: 0,
+        scale: 0,
+        rotation: 180,
+        duration: 1,
+        delay: 0.8,
+        ease: 'back.out(1.7)'
+    });
+
+    // Mulher VR - entrada dramática
+    gsap.from('.hero-vr-girl', {
         opacity: 0,
         x: 200,
         scale: 1.1,
@@ -46,8 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power3.out'
     });
 
-    // Subtle float animation for hero image
-    gsap.to('.hero-image', {
+    // Animação flutuante sutil para a mulher VR
+    gsap.to('.hero-vr-girl', {
         y: -20,
         duration: 3,
         repeat: -1,
@@ -56,8 +66,8 @@ document.addEventListener('DOMContentLoaded', function() {
         delay: 2
     });
 
-    // Pattern bottom fade in
-    gsap.from('.hero-pattern', {
+    // Grid de transição
+    gsap.from('.hero-transition-grid', {
         opacity: 0,
         y: 100,
         duration: 1.5,
@@ -66,11 +76,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ====================================
-    // Numbers Section Animations
+    // Numbers Section Animations - NOVA ESTRUTURA
     // ====================================
     
-    // Section header
-    gsap.from('.numbers-section .section-label', {
+    // Header da seção
+    gsap.from('.numbers-title', {
         scrollTrigger: {
             trigger: '.numbers-section',
             start: 'top 70%',
@@ -82,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
-    gsap.from('.numbers-section .section-line', {
+    gsap.from('.numbers-line', {
         scrollTrigger: {
             trigger: '.numbers-section',
             start: 'top 70%',
@@ -94,31 +104,27 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
-    // Stats items animation
+    // Estatísticas - layout direto
     const statItems = gsap.utils.toArray('.stat-item');
-    statItems.forEach((stat, index) => {
-        // Number counter animation
-        const numberElement = stat.querySelector('.stat-number');
-        const targetText = numberElement.textContent;
-        
-        gsap.from(stat, {
+    statItems.forEach((item, index) => {
+        gsap.from(item, {
             scrollTrigger: {
-                trigger: stat,
+                trigger: item,
                 start: 'top 80%',
                 toggleActions: 'play none none reverse'
             },
             opacity: 0,
-            x: -80,
+            y: 80,
             duration: 0.8,
             delay: index * 0.15,
             ease: 'power2.out'
         });
 
-        // Highlight effect on scroll
-        if (stat.classList.contains('highlight') || stat.classList.contains('large')) {
-            gsap.to(stat, {
+        // Efeito de destaque para item amarelo
+        if (item.classList.contains('stat-highlight')) {
+            gsap.to(item, {
                 scrollTrigger: {
-                    trigger: stat,
+                    trigger: item,
                     start: 'top 60%',
                     toggleActions: 'play none none reverse'
                 },
@@ -129,15 +135,58 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Elementos decorativos
+    gsap.from('.decoration-circle', {
+        scrollTrigger: {
+            trigger: '.numbers-section',
+            start: 'top 60%',
+            toggleActions: 'play none none reverse'
+        },
+        opacity: 0,
+        scale: 0,
+        duration: 1.5,
+        delay: 0.5,
+        ease: 'back.out(1.7)'
+    });
+
+    const decorationShapes = gsap.utils.toArray('.decoration-shape');
+    gsap.from(decorationShapes, {
+        scrollTrigger: {
+            trigger: '.numbers-section',
+            start: 'top 70%',
+            toggleActions: 'play none none reverse'
+        },
+        opacity: 0,
+        scale: 0,
+        rotation: 180,
+        stagger: 0.1,
+        duration: 0.8,
+        delay: 0.7,
+        ease: 'back.out(1.2)'
+    });
+
+    // Watermark - animação simples conforme Figma
+    gsap.from('.numbers-watermark-bg', {
+        scrollTrigger: {
+            trigger: '.numbers-section',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+        },
+        opacity: 0,
+        scale: 0.8,
+        duration: 1.5,
+        ease: 'power2.out'
+    });
+
     // Watermark parallax
-    gsap.to('.numbers-watermark', {
+    gsap.to('.numbers-watermark-bg', {
         scrollTrigger: {
             trigger: '.numbers-section',
             start: 'top bottom',
             end: 'bottom top',
             scrub: 1
         },
-        y: -100,
+        y: -50,
         ease: 'none'
     });
 

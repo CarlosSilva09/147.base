@@ -8,71 +8,108 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <!-- Seção Hero -->
+    <!-- Seção Hero - EXATAMENTE COMO FIGMA -->
     <section id="home" class="hero-section">
-        <!-- Linhas decorativas amarelas -->
-        <div class="hero-lines hero-lines-top"></div>
-        <div class="hero-lines hero-lines-bottom"></div>
-        
-        <div class="container">
-            <div class="hero-logo">
+        <div class="hero-container">
+            <!-- Logo pequeno no canto -->
+            <div class="hero-logo-small">
                 <img src="img/logo.webp" alt="147.digital Logo">
             </div>
             
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">Somos<br>digital.<br><span class="hero-title-red">Somos</span></h1>
+            <!-- Conteúdo principal -->
+            <div class="hero-main-content">
+                <div class="hero-text-section">
+                    <h1 class="hero-title">
+                        <span class="hero-text-dark">Somos</span><br>
+                        <span class="hero-text-dark">digital.</span><br>
+                        <span class="hero-text-red">Somos</span>
+                    </h1>
+                    
+                    <!-- Elemento 147 vermelho conforme Figma -->
+                    <div class="hero-147-element">
+                        <div class="hero-147-symbol">147</div>
+                        <div class="hero-147-text">DIGITAL</div>
+                    </div>
+                    
+                    <!-- Círculo amarelo com ícone conforme Figma -->
+                    <div class="hero-yellow-circle">
+                        <img src="img/elemento_01.webp" alt="Ícone">
+                    </div>
                 </div>
                 
-                <!-- Logo 147 grande vermelho -->
-                <div class="hero-147-logo">
-                    <img src="img/elemento_02.webp" alt="147 Digital">
+                <!-- Mulher VR -->
+                <div class="hero-vr-girl">
+                    <img src="img/girl-Vr.webp" alt="Girl VR">
                 </div>
-                
-                <!-- Círculo amarelo decorativo -->
-                <div class="hero-circle"></div>
             </div>
             
-            <!-- Girl VR à direita -->
-            <img src="img/girl-Vr.webp" alt="Girl VR" class="hero-image">
+            <!-- Grid de transição -->
+            <div class="hero-transition-grid"></div>
         </div>
     </section>
 
-    <!-- Seção Números -->
+    <!-- Seção Números - EXATAMENTE COMO FIGMA -->
     <section id="numeros" class="numbers-section">
-        <!-- Background full na seção -->
-        <div class="numbers-bg">
+        <!-- Background com overlay -->
+        <div class="numbers-background">
             <img src="img/bg-secao-02.webp" alt="Background">
+            <div class="numbers-overlay"></div>
         </div>
         
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-label">147 DIGITAL NOS ÚLTIMOS 03 ANOS</h2>
+        <!-- Watermark de fundo - palavra por palavra -->
+        <div class="numbers-watermark-bg">
+            <span class="watermark-word">DIGITAL</span>
+            <span class="watermark-word">SEO</span>
+            <span class="watermark-word">DESIGN</span>
+            <span class="watermark-word">MARKETING</span>
+            <span class="watermark-word">SOCIAL</span>
+            <span class="watermark-word">MEDIA</span>
+        </div>
+        
+        
+        <div class="numbers-container">
+            <!-- Header da seção -->
+            <div class="numbers-header">
+                <h2 class="numbers-title">147 DIGITAL NOS ÚLTIMOS 03 ANOS</h2>
+                <div class="numbers-line"></div>
             </div>
             
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h3 class="stat-number">+1.000</h3>
-                    <p class="stat-text">E-MAILS MARKETING DISPARADOS</p>
+            <!-- Estatísticas - layout direto conforme Figma -->
+            <div class="stats-direct">
+                <!-- +1.000 E-MAILS -->
+                <div class="stat-item stat-item-1">
+                    <div class="stat-number">+1.000</div>
+                    <div class="stat-text">MAILS MARKETING DISPARADOS</div>
                 </div>
                 
-                <div class="stat-item">
-                    <h3 class="stat-number">+40.000</h3>
-                    <p class="stat-text">HORAS EXECUTADAS EM PROJETOS</p>
+                <!-- +40.000 HORAS -->
+                <div class="stat-item stat-item-2">
+                    <div class="stat-number">+40.000</div>
+                    <div class="stat-text">HORAS EXECUTADAS EM PROJETOS</div>
                 </div>
                 
-                <div class="stat-item stat-item-highlight">
-                    <h3 class="stat-number">+1.7 MILHÕES</h3>
-                    <p class="stat-text">DE REAIS (R$) GERENCIADOS EM CAMPANHAS</p>
+                <!-- +1.7 MILHÕES (DESTAQUE AMARELO) -->
+                <div class="stat-item stat-item-3 stat-highlight">
+                    <div class="stat-number">+1.7 MILHÕES</div>
+                    <div class="stat-text">DE REAIS (R$) GERENCIADOS EM CAMPANHAS</div>
                 </div>
                 
+                <!-- +50 MILHÕES (GRANDE) -->
                 <div class="stat-item stat-item-large">
-                    <h3 class="stat-number">+50 MILHÕES</h3>
-                    <p class="stat-text">DE REAIS (R$) GERADOS EM OPORTUNIDADE DE VENDAS COM LEADS ENTREGUES AOS CLIENTES NOS ÚLTIMOS 12 MESES</p>
+                    <div class="stat-number">+50 MILHÕES</div>
+                    <div class="stat-text">DE REAIS (R$) GERADOS EM OPORTUNIDADE DE VENDAS COM LEADS ENTREGUES AOS CLIENTES NOS ÚLTIMOS 12 MESES</div>
                 </div>
             </div>
             
-            <div class="numbers-watermark">DIGITAL SEO DESIGN MARKETING SOCIAL MEDIA</div>
+            <!-- Elementos decorativos -->
+            <div class="numbers-decorations">
+                <div class="decoration-circle"></div>
+                <div class="decoration-shapes">
+                    <div class="decoration-shape shape-1"></div>
+                    <div class="decoration-shape shape-2"></div>
+                    <div class="decoration-shape shape-3"></div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -208,7 +245,6 @@
                     </ul>
                     <div class="case-buttons">
                         <button class="btn-outline">Ver case</button>
-                        <button class="btn-primary">Ver case</button>
                     </div>
                 </div>
             </div>

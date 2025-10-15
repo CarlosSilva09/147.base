@@ -44,37 +44,18 @@ img {
     align-items: center;
 }
 
-/* Linhas amarelas diagonais */
-.hero-lines {
-    position: absolute;
+.hero-container {
     width: 100%;
-    height: 80px;
-    z-index: 1;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 120px;
 }
 
-.hero-lines-top {
-    top: 0;
-    background: repeating-linear-gradient(
-        45deg,
-        #F1E14B 0px,
-        #F1E14B 20px,
-        transparent 20px,
-        transparent 40px
-    );
-}
-
-.hero-lines-bottom {
-    bottom: 0;
-    background: repeating-linear-gradient(
-        45deg,
-        #F1E14B 0px,
-        #F1E14B 20px,
-        transparent 20px,
-        transparent 40px
-    );
-}
-
-.hero-logo {
+/* Logo pequeno no canto */
+.hero-logo-small {
     position: absolute;
     top: 48px;
     left: 48px;
@@ -83,21 +64,27 @@ img {
     z-index: 10;
 }
 
-.hero-logo img {
+.hero-logo-small img {
     width: 100%;
     height: auto;
     display: block;
 }
 
-.hero-content {
+/* Conteúdo principal */
+.hero-main-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
     position: relative;
-    z-index: 5;
-    padding-top: 180px;
 }
 
-.hero-text {
+/* Seção de texto */
+.hero-text-section {
     position: relative;
-    z-index: 7;
+    z-index: 5;
+    flex: 1;
 }
 
 .hero-title {
@@ -105,83 +92,117 @@ img {
     font-weight: 300;
     font-size: 120px;
     line-height: 0.9;
-    color: #1E2F3C;
     margin: 0;
     letter-spacing: -0.02em;
 }
 
-.hero-title-red {
+.hero-text-dark {
+    color: #1E2F3C;
+}
+
+.hero-text-red {
     color: #DC473B;
 }
 
-/* Logo 147 grande vermelho - sobreposto no texto */
-.hero-147-logo {
+/* Elemento 147 vermelho conforme Figma */
+.hero-147-element {
     position: absolute;
     left: 0;
-    bottom: -40px;
-    width: 260px;
-    height: auto;
+    bottom: -80px;
     z-index: 6;
     pointer-events: none;
 }
 
-.hero-147-logo img {
-    width: 100%;
-    height: auto;
-    display: block;
+.hero-147-symbol {
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 700;
+    font-size: 72px;
+    color: #DC473B;
+    line-height: 1;
+    margin-bottom: 8px;
 }
 
-/* Círculo amarelo decorativo */
-.hero-circle {
+.hero-147-text {
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: #DC473B;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* Círculo amarelo com ícone conforme Figma */
+.hero-yellow-circle {
     position: absolute;
-    top: 180px;
-    right: 380px;
-    width: 120px;
-    height: 120px;
-    background: #F1E14B;
+    top: 20px;
+    right: 350px;
+    width: 60px;
+    height: 60px;
+    background: #FEE644;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 4;
 }
 
-/* Girl VR posicionada à direita */
-.hero-image {
-    position: absolute;
-    right: 0;
-    bottom: 0;
+.hero-yellow-circle img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+/* Mulher VR */
+.hero-vr-girl {
+    position: relative;
+    width: 50%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.hero-vr-girl img {
     width: auto;
-    height: 85vh;
+    height: 90vh;
     max-height: 900px;
     object-fit: contain;
-    object-position: bottom right;
-    z-index: 3;
+    object-position: center bottom;
+}
+
+/* Grid de transição */
+.hero-transition-grid {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+    background-size: 40px 40px;
+    z-index: 2;
 }
 
 @media (max-width: 1280px) {
     .hero-title { font-size: 100px; }
-    .hero-image { height: 75vh; right: -40px; }
-    .hero-circle { right: 280px; width: 100px; height: 100px; }
+    .hero-vr-girl img { height: 80vh; }
+    .hero-yellow-circle { right: 300px; }
 }
 
 @media (max-width: 1024px) {
     .hero-title { font-size: 80px; }
-    .hero-image { height: 65vh; right: -60px; }
-    .hero-147-logo { width: 200px; }
+    .hero-vr-girl img { height: 70vh; }
+    .hero-yellow-circle { right: 200px; width: 50px; height: 50px; }
+    .hero-icon { font-size: 20px; }
 }
 
 @media (max-width: 768px) {
-    .hero-section { min-height: auto; padding: 120px 0 60px; }
-    .hero-content { padding-top: 80px; }
+    .hero-container { padding: 0 40px; }
+    .hero-main-content { flex-direction: column; }
     .hero-title { font-size: 56px; }
-    .hero-image {
-        position: relative;
-        right: auto;
-        margin: 40px auto 0;
-        height: auto;
-        max-height: 500px;
-        display: block;
-    }
-    .hero-circle { display: none; }
-    .hero-147-logo { width: 160px; bottom: -20px; }
+    .hero-vr-girl { width: 100%; height: 50vh; }
+    .hero-vr-girl img { height: auto; max-height: 400px; }
+    .hero-yellow-circle { position: relative; right: auto; margin: 20px 0; }
 }
 
 /* ====================================
@@ -191,140 +212,252 @@ img {
 .numbers-section {
     position: relative;
     min-height: 100vh;
-    padding: 120px 0;
     overflow: hidden;
 }
 
-/* Background cobre TODA a seção */
-.numbers-bg {
+/* Background com overlay */
+.numbers-background {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: 1;
 }
 
-.numbers-bg img {
+.numbers-background img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.numbers-section .container {
-    position: relative;
+.numbers-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
     z-index: 2;
 }
 
+/* Watermark de fundo - exatamente como no Figma */
+.numbers-watermark-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    pointer-events: none;
+    text-align: center;
+}
+
+.watermark-word {
+    display: block;
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 700;
+    font-size: 160px;
+    line-height: 0.8;
+    text-transform: uppercase;
+    color: rgba(78, 193, 182, 0.6);
+    mix-blend-mode: overlay;
+    opacity: 0.8;
+    letter-spacing: 0.1em;
+    margin: 0;
+}
+
+/* Container principal */
+.numbers-container {
+    position: relative;
+    z-index: 3;
+    padding: 120px;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
 /* Header da seção */
-.numbers-section .section-header {
+.numbers-header {
     margin-bottom: 80px;
 }
 
-.numbers-section .section-label {
+.numbers-title {
     font-family: 'Titillium Web', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 700;
+    font-size: 24px;
     line-height: 1.2;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0;
+    color: #FFFFFF;
+    margin: 0 0 20px 0;
 }
 
-/* Grid dos stats - layout exato do Figma */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+.numbers-line {
+    width: 100%;
+    height: 1px;
+    background: #FFFFFF;
+    opacity: 0.3;
+}
+
+/* Container das estatísticas - layout direto conforme Figma */
+.stats-direct {
+    position: relative;
+    z-index: 4;
+    max-width: 600px;
+    margin-left: 120px;
+}
+
+/* Itens de estatísticas - sem cards, coluna vertical */
+.stat-item {
+    position: relative;
+    z-index: 4;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0 0 40px 0;
+    width: 100%;
+}
+
+/* Layout vertical simples conforme Figma */
+.stat-item-1 {
     margin-bottom: 60px;
 }
 
-/* Cards de estatísticas */
-.stat-item {
-    background: rgba(30, 47, 60, 0.6);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 32px 28px;
-    transition: all 0.3s ease;
+.stat-item-2 {
+    margin-bottom: 60px;
 }
 
-.stat-item:hover {
-    transform: translateY(-8px);
-    background: rgba(30, 47, 60, 0.75);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+.stat-item-3 {
+    margin-bottom: 60px;
 }
 
-/* Card highlight (amarelo) */
-.stat-item-highlight .stat-number {
-    color: #F1E14B !important;
-}
-
-/* Card grande ocupa 2 colunas */
 .stat-item-large {
-    grid-column: span 2;
+    margin-bottom: 0;
 }
 
+/* Números - exatamente como no Figma */
 .stat-number {
     font-family: 'Titillium Web', sans-serif;
-    font-weight: 700;
-    font-size: 48px;
+    font-weight: 600;
     line-height: 1;
     color: #FFFFFF;
-    margin: 0 0 12px 0;
+    margin: 0 0 16px 0;
+    text-transform: uppercase;
 }
 
+.stat-item-1 .stat-number {
+    font-size: 64px;
+}
+
+.stat-item-2 .stat-number {
+    font-size: 80px;
+}
+
+.stat-item-3 .stat-number {
+    font-size: 80px;
+    color: #FEE644 !important; /* Amarelo para destaque */
+}
+
+.stat-item-large .stat-number {
+    font-size: 80px;
+    margin: 0 0 20px 0;
+}
+
+/* Textos - exatamente como no Figma */
 .stat-text {
     font-family: 'Titillium Web', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 400;
+    font-size: 28px;
     line-height: 1.4;
-    letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.8);
+    color: #FFFFFF;
     margin: 0;
 }
 
-/* Watermark */
-.numbers-watermark {
-    position: absolute;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Titillium Web', sans-serif;
-    font-weight: 700;
+.stat-item-large .stat-text {
     font-size: 28px;
-    line-height: 1;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.08);
-    white-space: nowrap;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+}
+
+/* Elementos decorativos */
+.numbers-decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 1;
+    pointer-events: none;
+}
+
+.decoration-circle {
+    position: absolute;
+    top: 20%;
+    right: 10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(220, 71, 59, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.decoration-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.decoration-shape {
+    position: absolute;
+}
+
+.decoration-shape.shape-1 {
+    top: 15%;
+    left: 15%;
+    width: 20px;
+    height: 20px;
+    background: rgba(254, 230, 68, 0.4);
+    border-radius: 50%;
+}
+
+.decoration-shape.shape-2 {
+    top: 25%;
+    right: 20%;
+    width: 15px;
+    height: 15px;
+    background: rgba(220, 71, 59, 0.4);
+    border-radius: 50%;
+}
+
+.decoration-shape.shape-3 {
+    bottom: 25%;
+    left: 10%;
+    width: 25px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    transform: rotate(30deg);
 }
 
 @media (max-width: 1024px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .stat-item-large {
-        grid-column: span 2;
-    }
-    .stat-number { font-size: 40px; }
+    .numbers-container { padding: 80px 40px; }
+    .stats-row-top { grid-template-columns: repeat(2, 1fr); }
+    .stat-card-3 { grid-column: span 2; }
+    .numbers-watermark-bg { font-size: 120px; }
+    .stat-number { font-size: 48px; }
+    .stat-text { font-size: 20px; }
 }
 
 @media (max-width: 640px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-    .stat-item-large {
-        grid-column: span 1;
-    }
-    .stat-number { font-size: 32px; }
-    .numbers-watermark { font-size: 18px; }
+    .numbers-container { padding: 60px 20px; }
+    .stats-row-top { grid-template-columns: 1fr; }
+    .stat-card-3 { grid-column: span 1; }
+    .numbers-watermark-bg { font-size: 80px; }
+    .stat-number { font-size: 40px; }
+    .stat-text { font-size: 16px; }
+    .numbers-title { font-size: 20px; }
 }
 
 /* ====================================
