@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
-    // Estatísticas - layout direto
+    // Estatísticas - layout direto com contagem animada
     const statItems = gsap.utils.toArray('.stat-item');
     statItems.forEach((item, index) => {
         gsap.from(item, {
@@ -120,6 +120,93 @@ document.addEventListener('DOMContentLoaded', function() {
             ease: 'power2.out'
         });
 
+        // Animação de contagem dos números (preserva formato do HTML)
+        const numberElement = item.querySelector('.stat-number');
+        if (numberElement) {
+            const originalText = numberElement.textContent.trim();
+
+            // Extrai a primeira parte numérica do texto preservando separadores
+            const numMatch = originalText.match(/[+-]?\d[\d.,]*/);
+            const numberStr = numMatch ? numMatch[0] : '';
+            const start = numMatch ? originalText.indexOf(numberStr) : 0;
+            const prefix = originalText.slice(0, start);
+            const suffix = originalText.slice(start + numberStr.length);
+
+            // Detecta separadores decimal/milhar com heurística simples
+            const lastDot = numberStr.lastIndexOf('.');
+            const lastComma = numberStr.lastIndexOf(',');
+            let decimalSep = null;
+            let thousandsSep = null;
+            let decimals = 0;
+
+            if (lastComma > lastDot && lastComma !== -1) {
+                // vírgula provavelmente decimal (pt-BR), ponto (se houver) como milhar
+                decimalSep = ',';
+                thousandsSep = numberStr.includes('.') ? '.' : null;
+                decimals = numberStr.length - lastComma - 1;
+            } else if (lastDot !== -1) {
+                const fracLen = numberStr.length - lastDot - 1;
+                if (fracLen !== 3) {
+                    // se não for grupo de 3 no final, considere ponto decimal
+                    decimalSep = '.';
+                    thousandsSep = numberStr.includes(',') ? ',' : null;
+                    decimals = fracLen;
+                } else {
+                    // provável separador de milhar
+                    thousandsSep = '.';
+                    decimalSep = null;
+                    decimals = 0;
+                }
+            }
+
+            // Converte string numérica para valor real
+            let sanitized = numberStr;
+            if (thousandsSep) sanitized = sanitized.split(thousandsSep).join('');
+            if (decimalSep && decimalSep !== '.') sanitized = sanitized.replace(decimalSep, '.');
+            const targetValue = parseFloat(sanitized) || 0;
+
+            // Função de formatação que replica o formato original
+            const formatValue = (val) => {
+                let str = decimals > 0 ? val.toFixed(decimals) : Math.round(val).toString();
+                let intPart = str;
+                let fracPart = '';
+                if (decimals > 0) {
+                    const split = str.split('.');
+                    intPart = split[0];
+                    fracPart = split[1] || '';
+                }
+                if (thousandsSep) {
+                    intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
+                }
+                if (decimals > 0) {
+                    const sep = decimalSep || ','; // se não detectado, usa vírgula por padrão pt-BR
+                    return intPart + sep + fracPart;
+                }
+                return intPart;
+            };
+
+            // Atualiza do 0 ao alvo mantendo o formato
+            const counter = { value: 0 };
+            gsap.to(counter, {
+                value: targetValue,
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top 75%',
+                    toggleActions: 'play none none reverse'
+                },
+                duration: 2,
+                delay: index * 0.15 + 0.3,
+                ease: 'power2.out',
+                onUpdate: function() {
+                    numberElement.textContent = prefix + formatValue(counter.value) + suffix;
+                },
+                onComplete: function() {
+                    // Garante que o texto final seja exatamente o original do HTML
+                    numberElement.textContent = originalText;
+                }
+            });
+        }
+
         // Efeito de destaque para item amarelo
         if (item.classList.contains('stat-highlight')) {
             gsap.to(item, {
@@ -134,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
 
     // Elementos decorativos
     gsap.from('.decoration-circle', {
@@ -338,13 +426,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ====================================
-    // Services Section - Card Animations
+    // Services Section - Card Stacking Animations (AAT.js style)
     // ====================================
     
     gsap.from('.services-section .section-label', {
         scrollTrigger: {
             trigger: '.services-section',
-            start: 'top 70%',
+            start: 'top 50%',
             toggleActions: 'play none none reverse'
         },
         opacity: 0,
@@ -356,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.from('.services-title', {
         scrollTrigger: {
             trigger: '.services-section',
-            start: 'top 60%',
+            start: 'top 50%',
             toggleActions: 'play none none reverse'
         },
         opacity: 0,
@@ -365,110 +453,101 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
-    // Service cards animations
-    const serviceCards = gsap.utils.toArray('.service-card');
-    serviceCards.forEach((card, index) => {
-        // Initial entrance animation
-        gsap.from(card, {
-            scrollTrigger: {
-                trigger: card,
-                start: 'top 75%',
-                toggleActions: 'play none none reverse'
-            },
-            opacity: 0,
-            x: -150,
-            duration: 1,
-            delay: index * 0.2,
-            ease: 'power3.out'
-        });
+    // Empilhamento dos cards (stack) centralizados
+    const servicesCardsContainer = document.querySelector('.cards') || document.querySelector('.services-cards');
+    const servicesCards = gsap.utils.toArray('.card').length ? gsap.utils.toArray('.card') : gsap.utils.toArray('.service-card');
+    if (servicesCardsContainer && servicesCards.length) {
+        // Centralização vertical usa --card-height no CSS (via top: calc(...))
+        const updateCardsMetrics = () => {
+            const firstInner = servicesCards[0].querySelector('.card__inner') || servicesCards[0];
+            const h = firstInner ? Math.max(firstInner.scrollHeight, 420) : 420;
+            servicesCardsContainer.style.setProperty('--cards-count', servicesCards.length);
+            servicesCardsContainer.style.setProperty('--card-height', `${h}px`);
+            // Garante brilho inicial
+            servicesCards.forEach(c => {
+                const inner = c.querySelector('.card__inner') || c;
+                if (inner) inner.style.filter = 'brightness(1)';
+            });
+        };
+        updateCardsMetrics();
+        window.addEventListener('load', updateCardsMetrics);
+        window.addEventListener('resize', () => { gsap.delayedCall(0.05, updateCardsMetrics); });
 
-        // Card number animation
-        const cardNumber = card.querySelector('.card-number');
-        gsap.from(cardNumber, {
-            scrollTrigger: {
-                trigger: card,
-                start: 'top 75%',
-                toggleActions: 'play none none reverse'
-            },
-            opacity: 0,
-            scale: 0,
-            rotation: 180,
-            duration: 0.8,
-            delay: index * 0.2 + 0.3,
-            ease: 'back.out(1.7)'
-        });
+        servicesCards.forEach((card, index) => {
+            const inner = card.querySelector('.card__inner') || card;
+            const numberEl = card.querySelector('.card__number') || card.querySelector('.card-number');
+            const imageEl = card.querySelector('.card__image-container') || card.querySelector('.card-image');
 
-        // Card image animation
-        const cardImage = card.querySelector('.card-image');
-        if (cardImage) {
-            gsap.from(cardImage, {
+            // Ordem de sobreposição: os próximos ficam acima
+            card.style.zIndex = String(index + 1);
+            if (inner) inner.style.zIndex = String(index + 1);
+
+            // Entrada suave para cada card
+            gsap.from(inner, {
                 scrollTrigger: {
                     trigger: card,
-                    start: 'top 75%',
+                    start: 'top 80%',
                     toggleActions: 'play none none reverse'
                 },
                 opacity: 0,
-                x: 100,
-                scale: 0.8,
-                duration: 1,
-                delay: index * 0.2 + 0.4,
-                ease: 'power2.out'
-            });
-        }
-
-        // Advanced hover effect
-        card.addEventListener('mouseenter', () => {
-            gsap.to(card, {
-                x: 30,
-                scale: 1.02,
-                boxShadow: '0px 8px 48px rgba(0, 0, 0, 0.24)',
-                duration: 0.4,
-                ease: 'power2.out'
+                y: 40,
+                duration: 0.8,
+                ease: 'power3.out'
             });
 
-            gsap.to(cardNumber, {
-                scale: 1.1,
-                color: '#DC473B',
-                duration: 0.3,
-                ease: 'back.out(1.7)'
-            });
-
-            if (cardImage) {
-                gsap.to(cardImage, {
-                    scale: 1.05,
-                    rotation: 2,
-                    duration: 0.4,
+            if (numberEl) {
+                // Animação suave, sem "pulo": apenas fade + leve translação
+                gsap.from(numberEl, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 80%',
+                        toggleActions: 'play none none reverse'
+                    },
+                    opacity: 0,
+                    y: 14,
+                    duration: 0.5,
+                    delay: 0.1,
                     ease: 'power2.out'
                 });
             }
-        });
 
-        card.addEventListener('mouseleave', () => {
-            gsap.to(card, {
-                x: 0,
-                scale: 1,
-                boxShadow: '0px 4px 32px rgba(0, 0, 0, 0.16)',
-                duration: 0.4,
-                ease: 'power2.out'
-            });
-
-            gsap.to(cardNumber, {
-                scale: 1,
-                color: '#1E2F3C',
-                duration: 0.3,
-                ease: 'power2.out'
-            });
-
-            if (cardImage) {
-                gsap.to(cardImage, {
-                    scale: 1,
-                    rotation: 0,
-                    duration: 0.4,
+            if (imageEl) {
+                gsap.from(imageEl, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 80%',
+                        toggleActions: 'play none none reverse'
+                    },
+                    opacity: 0,
+                    x: 60,
+                    scale: 0.96,
+                    duration: 0.8,
+                    delay: 0.1,
                     ease: 'power2.out'
                 });
             }
+
+            // Efeito stack: enquanto o próximo card entra, o atual reduz escala e brilho
+            if (index < servicesCards.length - 1 && inner) {
+                const nextCard = servicesCards[index + 1];
+                const toScale = 0.92; // redução leve
+                gsap.to(inner, {
+                    scrollTrigger: {
+                        trigger: nextCard,
+                        start: 'top bottom',
+                        end: 'top top',
+                        scrub: true
+                    },
+                    scale: toScale,
+                    filter: 'brightness(0.85)',
+                    transformOrigin: 'top center',
+                    ease: 'none'
+                });
+            }
         });
-    });
+    }
+
+
 
     // ====================================
     // Cases Section Animations

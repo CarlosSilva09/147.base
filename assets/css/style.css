@@ -32,6 +32,39 @@ img {
 }
 
 /* ====================================
+   Section Headers - Estilos Globais
+   ==================================== */
+
+.section-header {
+    margin-bottom: 60px;
+}
+
+.section-label {
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.2;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 20px 0;
+    color: #FFFFFF;
+}
+
+.section-line {
+    width: 100%;
+    height: 1px;
+    opacity: 0.3;
+}
+
+.section-line.red {
+    background: #DC473B;
+}
+
+.section-line.white {
+    background: #FFFFFF;
+}
+
+/* ====================================
    Hero Section - EXATAMENTE COMO FIGMA
    ==================================== */
 
@@ -211,8 +244,10 @@ img {
 
 .numbers-section {
     position: relative;
-    min-height: 90vh;
+    height: 100vh;
     overflow: hidden;
+    display: flex;
+    align-items: center;
 }
 
 /* Background com overlay */
@@ -238,17 +273,17 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 2;
 }
 
 /* Watermark de fundo - exatamente como no Figma */
 .numbers-watermark-bg {
     position: absolute;
-    top: 65%;
-    left: 30%;
+    top: 54%;
+    left: 22%;
     transform: translate(-50%, -50%);
-    z-index: 2;
+    z-index: 5; /* acima do overlay (2) e abaixo do conteudo (10) */
     pointer-events: none;
     text-align: left;
 }
@@ -257,28 +292,29 @@ img {
     display: block;
     font-family: 'Titillium Web', sans-serif;
     font-weight: 700;
-    font-size: 160px;
-    line-height: 0.8;
+    font-size: 140px;
+    line-height: 0.75;
     text-transform: uppercase;
     color: rgba(78, 193, 182, 0.6);
     mix-blend-mode: overlay;
-    opacity: 0.2;
-    letter-spacing: 0.1em;
+    opacity: 0.12;
+    letter-spacing: 0.06em;
     margin: 0;
 }
 
 /* Container principal */
 .numbers-container {
     position: relative;
-    z-index: 3;
-    padding: 120px;
+    z-index: 10;
+    width: 100%;
     max-width: 1440px;
     margin: 0 auto;
+    padding: 0 120px;
 }
 
 /* Header da seção */
 .numbers-header {
-    margin-bottom: 80px;
+    margin-bottom: 50px;
 }
 
 .numbers-title {
@@ -302,33 +338,34 @@ img {
 /* Container das estatísticas - layout direto conforme Figma */
 .stats-direct {
     position: relative;
-    z-index: 4;
-    max-width: 600px;
-    margin-left: 120px;
+    z-index: 10;
+    max-width: 750px;
+    margin-left: 0;
 }
 
 /* Itens de estatísticas - sem cards, coluna vertical */
 .stat-item {
     position: relative;
-    z-index: 4;
+    z-index: 10;
     background: transparent;
     border: none;
     padding: 0;
-    margin: 0 0 40px 0;
+    margin: 0 0 30px 0;
     width: 100%;
+    opacity: 1;
 }
 
 /* Layout vertical simples conforme Figma */
 .stat-item-1 {
-    margin-bottom: 60px;
+    margin-bottom: 32px;
 }
 
 .stat-item-2 {
-    margin-bottom: 60px;
+    margin-bottom: 32px;
 }
 
 .stat-item-3 {
-    margin-bottom: 60px;
+    margin-bottom: 32px;
 }
 
 .stat-item-large {
@@ -341,43 +378,44 @@ img {
     font-weight: 600;
     line-height: 1;
     color: #FFFFFF;
-    margin: 0 0 16px 0;
+    margin: 0 0 12px 0;
     text-transform: uppercase;
 }
 
 .stat-item-1 .stat-number {
-    font-size: 64px;
+    font-size: 56px;
 }
 
 .stat-item-2 .stat-number {
-    font-size: 80px;
+    font-size: 64px;
 }
 
 .stat-item-3 .stat-number {
-    font-size: 80px;
+    font-size: 72px;
     color: #FEE644 !important; /* Amarelo para destaque */
 }
 
 .stat-item-large .stat-number {
-    font-size: 80px;
-    margin: 0 0 20px 0;
+    font-size: 72px;
+    margin: 0 0 16px 0;
 }
 
 /* Textos - exatamente como no Figma */
 .stat-text {
     font-family: 'Titillium Web', sans-serif;
     font-weight: 400;
-    font-size: 28px;
-    line-height: 1.4;
+    font-size: 20px;
+    line-height: 1.3;
     text-transform: uppercase;
     color: #FFFFFF;
     margin: 0;
 }
 
 .stat-item-large .stat-text {
-    font-size: 28px;
-    line-height: 1.4;
-    letter-spacing: 0.08em;
+    font-size: 18px;
+    line-height: 1.3;
+    letter-spacing: 0.05em;
+    max-width: 600px;
 }
 
 /* Elementos decorativos */
@@ -523,6 +561,16 @@ img {
     line-height: 140%;
     color: #1E2F3C;
     margin-bottom: 24px;
+}
+.section-label-red{
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.2;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 20px 0;
+    color: #DC473B;
 }
 
 /* ====================================
@@ -678,8 +726,9 @@ img {
     position: relative;
     background: #DC473B;
     padding: 120px 0;
-    min-height: 1106px;
-    overflow: hidden;
+    min-height: 100vh;
+    /* overflow hidden pode quebrar position: sticky; manter visível para empilhamento */
+    overflow: visible;
 }
 
 .services-title {
@@ -693,84 +742,124 @@ img {
     margin: 60px 0 80px;
 }
 
-.services-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    position: relative;
-    z-index: 5;
+/* Grid cards estilo antigo, adaptado às classes atuais */
+.space { height: 40vh; }
+.space--small { height: 0; }
+
+/* Aumenta a largura útil apenas nesta seção para caber texto + imagem */
+.services-section .container { padding: 0 20px; }
+
+.cards {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-rows: repeat(var(--cards-count, 2), var(--card-height, 420px));
+    gap: 40px 0;
 }
 
-.service-card {
+.card {
+    position: sticky;
+    /* centraliza, mas não deixa aparecer tarde demais */
+    top: clamp(80px, calc((100vh - var(--card-height, 420px)) / 2), 200px);
+}
+
+.card__inner {
     position: relative;
-    height: 378px;
+    height: 420px;
     padding: 47px 80px;
     display: flex;
     align-items: center;
+    border-radius: 14px;
     box-shadow: 0px 4px 32px rgba(0, 0, 0, 0.16);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
 }
 
-.service-card.card-1 {
+/* Cores por card (equivalente ao .service-card.card-1/card-2) */
+.card--teal .card__inner {
     background: #4EC1B6;
-    margin-left: 101px;
-    width: calc(100% - 101px);
+    margin-left: 60px;
+    width: calc(100% - 60px);
 }
-
-.service-card.card-2 {
+.card--white .card__inner {
     background: #F5F5F5;
-    margin-left: 101px;
-    width: calc(100% - 101px);
+    margin-left: 60px;
+    width: calc(100% - 60px);
 }
 
-.card-number {
+/* Número e textos como no CSS antigo */
+.card__number {
+    /* número integrado ao fluxo para que o título fique logo abaixo */
+    position: static;
+    display: block;
     font-weight: 700;
     font-size: 80px;
     line-height: 120%;
     text-transform: uppercase;
     color: #1E2F3C;
-    position: absolute;
-    left: 80px;
-    top: 47px;
+    margin: 0 0 8px 0;
 }
 
-.card-title {
+.card__content {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    /* empilha número > título > descrição alinhados à esquerda */
+    margin-left: 0;
+    padding-top: 0;
+    /* mantém respiro à direita sem estrangular coluna */
+    padding-right: 40px;
+    max-width: 520px;
+    gap: 8px;
+}
+
+.card__title {
     font-weight: 700;
     font-size: 32px;
     line-height: 120%;
     text-transform: uppercase;
     color: #1E2F3C;
     margin: 0 0 16px 0;
-    padding-left: 0;
+    max-width: 478px;
 }
 
-.card-description {
+.card__description {
     font-weight: 300;
     font-size: 20px;
     line-height: 140%;
     color: #1E2F3C;
-    max-width: 478px;
-    margin-left: 0;
+    max-width: 520px;
 }
 
-.card-image {
+/* Imagem absoluta à direita com borda branca */
+.card__image-container {
     position: absolute;
     right: 80px;
     top: 50%;
     transform: translateY(-50%);
-    width: 483px;
-    height: 250px;
+    width: 560px;
+    height: 300px;
     border: 2.44px solid #FFFFFF;
+    box-sizing: border-box;
+    z-index: 2;
+}
+.card__image { width: 100%; height: 100%; object-fit: cover; }
+
+/* Hover de deslocamento (como no antigo) */
+.card:hover .card__inner { transform: translateX(20px); }
+
+@media (max-width: 900px) {
+    .cards { max-width: 90%; }
 }
 
-.card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.service-card:hover {
-    transform: translateX(20px);
+@media (max-width: 680px) {
+    .card__inner { flex-direction: column; height: auto; padding: 32px 24px; }
+    .card--teal .card__inner, .card--white .card__inner { margin-left: 0; width: 100%; }
+    .card__image-container { position: relative; right: auto; top: auto; transform: none; width: 100%; height: auto; border-width: 2px; margin-top: 16px; }
+    .card__title { font-size: 28px; }
+    .card__description { font-size: 16px; }
+    .card__content { margin-left: 0; padding-top: 0; padding-right: 0; gap: 8px; }
 }
 
 /* ====================================
