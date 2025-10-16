@@ -841,7 +841,7 @@ img {
     line-height: 90%;
     text-transform: uppercase;
     color: #FFFFFF;
-    opacity: 0.08;
+    opacity: 0.15;
     text-align: center;
     margin: 60px 0 80px;
 }
@@ -1056,7 +1056,13 @@ img {
     color: #86D2DB;
     margin-bottom: 40px;
 }
-.case-line { height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left center; margin: -24px 0 24px; opacity: .9; }
+.case-line { height: 2px; 
+    background: currentColor; 
+    transform: scaleX(0); 
+    transform-origin: left center; 
+    margin: -24px 0 24px; 
+    opacity: .9;
+}
 
 .case-features {
     list-style: none;
@@ -1093,9 +1099,11 @@ img {
 .case-item.theme-default .btn-outline { border-color: #4EC1B6; color: #4EC1B6; }
 .case-item.theme-default .btn-outline:hover { background: #4EC1B6; color: #1E2F3C; }
 
-.case-item.theme-yellow .case-title { color: #FEE644; }
-.case-item.theme-yellow .btn-outline { border-color: #FEE644; color: #FEE644; }
-.case-item.theme-yellow .btn-outline:hover { background: #FEE644; color: #1E2F3C; }
+.case-item.theme-yellow .case-title { color: #1E2F3C; }
+.case-item.theme-yellow .btn-outline { border-color: #1E2F3C; color: #1E2F3C; }
+.case-item.theme-yellow .btn-outline:hover { background: #1E2F3C; color: #4EC1B6; }
+.case-item.theme-yellow .case-features li::before { background: #1E2F3C; }
+.case-item.theme-yellow .case-features li { color: #1E2F3C !important; }
 
 /* Linha animada no header dos cases */
 .cases-anim {
