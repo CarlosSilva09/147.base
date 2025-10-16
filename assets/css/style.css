@@ -71,7 +71,12 @@ img {
 .hero-section {
     position: relative;
     min-height: 100vh;
-    background: #F6EFD1;
+    /* Fundo roxo do Figma */
+    /* corrige caminho relativo: CSS está em assets/css e imagem em /img */
+    /* ancorado no rodapé e menor para não ocupar toda a tela */
+    background:
+        url('../../img/fundo-hero.webp') bottom center / min(1400px, 88vw) auto no-repeat,
+        #F6EFD1;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -87,14 +92,15 @@ img {
     padding: 0 120px;
 }
 
-/* Logo pequeno no canto */
+/* Logo abaixo do título no Hero (147 vermelho) */
 .hero-logo-small {
-    position: absolute;
-    top: 48px;
-    left: 48px;
-    width: 64px;
+    position: relative; /* fica no fluxo, logo após o título */
+    top: auto;
+    left: auto;
+    width: clamp(240px, 28vw, 420px);
     height: auto;
-    z-index: 10;
+    margin-top: 16px;
+    z-index: 4; /* mantém acima do círculo amarelo */
 }
 
 .hero-logo-small img {
@@ -126,6 +132,8 @@ img {
     font-size: 120px;
     line-height: 0.9;
     margin: 0;
+    position: relative;
+    z-index: 5; /* garante texto acima do círculo */
     letter-spacing: -0.02em;
 }
 
@@ -135,6 +143,13 @@ img {
 
 .hero-text-red {
     color: #DC473B;
+}
+
+/* Bloco que agrupa logo e ícone abaixo do título */
+.hero-below-title {
+    position: relative;
+    margin-top: 8px; /* aproxima do texto */
+    display: inline-block;
 }
 
 /* Elemento 147 vermelho conforme Figma */
@@ -164,25 +179,27 @@ img {
     text-transform: uppercase;
 }
 
-/* Círculo amarelo com ícone conforme Figma */
+/* Ícone amarelo do Figma */
 .hero-yellow-circle {
     position: absolute;
-    top: 20px;
-    right: 350px;
-    width: 60px;
-    height: 60px;
-    background: #FEE644;
-    border-radius: 50%;
+    /* Posicionamento responsivo aproximado ao Figma */
+    --circle-size: clamp(122px, 10vw, 180px);
+    top: calc(var(--circle-size) * -0.40);
+    left: calc(100% - var(--circle-size) * 0.65);
+    width: var(--circle-size);
+    height: var(--circle-size);
+    background: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 4;
+    z-index: 2; /* abaixo do texto e logo para ficar "atrás" */
 }
 
 .hero-yellow-circle img {
-    width: 40px;
-    height: 40px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,.16));
 }
 
 /* Mulher VR */
@@ -219,13 +236,21 @@ img {
 @media (max-width: 1280px) {
     .hero-title { font-size: 100px; }
     .hero-vr-girl img { height: 80vh; }
-    .hero-yellow-circle { right: 300px; }
+    .hero-yellow-circle {
+        --circle-size: clamp(108px, 13vw, 156px);
+        top: calc(var(--circle-size) * -0.40);
+        left: calc(100% - var(--circle-size) * 0.65);
+    }
 }
 
 @media (max-width: 1024px) {
     .hero-title { font-size: 80px; }
     .hero-vr-girl img { height: 70vh; }
-    .hero-yellow-circle { right: 200px; width: 50px; height: 50px; }
+    .hero-yellow-circle {
+        --circle-size: clamp(96px, 16vw, 140px);
+        top: calc(var(--circle-size) * -0.40);
+        left: calc(100% - var(--circle-size) * 0.65);
+    }
     .hero-icon { font-size: 20px; }
 }
 
@@ -235,7 +260,35 @@ img {
     .hero-title { font-size: 56px; }
     .hero-vr-girl { width: 100%; height: 50vh; }
     .hero-vr-girl img { height: auto; max-height: 400px; }
-    .hero-yellow-circle { position: relative; right: auto; margin: 20px 0; }
+    .hero-yellow-circle {
+        position: relative;
+        left: auto;
+        top: auto;
+        margin: 20px 0;
+        width: 84px;
+        height: 84px;
+    }
+}
+
+/* Elemento decorativo no canto direito sobreposto à Girl VR */
+.hero-corner-element {
+    position: absolute;
+    right: clamp(8px, 5.5vw, 31px);
+    bottom: clamp(14px, 2vw, 28px);
+    width: clamp(160px, 69vw, 400px); /* mais largo como no Figma */
+    height: auto;
+    z-index: 6; /* acima da girl (z-index:3) e do círculo (z-index:4) */
+    pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+    .hero-corner-element { width: clamp(140px, 18vw, 220px); right: 16px; bottom: 18px; }
+}
+
+@media (max-width: 768px) {
+    .hero-corner-element { width: 120px; right: 12px; bottom: 12px; }
+    .hero-logo-small { width: clamp(200px, 50vw, 320px); margin-top: 12px; }
+    .hero-yellow-circle { position: relative; left: auto; top: auto; margin: 12px 0 0 0; width: 84px; height: 84px; }
 }
 
 /* ====================================
@@ -280,8 +333,8 @@ img {
 /* Watermark de fundo - exatamente como no Figma */
 .numbers-watermark-bg {
     position: absolute;
-    top: 54%;
-    left: 22%;
+    top: 66%;
+    left: 25%;
     transform: translate(-50%, -50%);
     z-index: 5; /* acima do overlay (2) e abaixo do conteudo (10) */
     pointer-events: none;
@@ -293,7 +346,7 @@ img {
     font-family: 'Titillium Web', sans-serif;
     font-weight: 700;
     font-size: 140px;
-    line-height: 0.75;
+    line-height: 1.0;
     text-transform: uppercase;
     color: rgba(78, 193, 182, 0.6);
     mix-blend-mode: overlay;
@@ -339,7 +392,7 @@ img {
 .stats-direct {
     position: relative;
     z-index: 10;
-    max-width: 750px;
+    max-width: min(100%, 980px); /* mais largo para comportar descrições longas */
     margin-left: 0;
 }
 
@@ -347,12 +400,21 @@ img {
 .stat-item {
     position: relative;
     z-index: 10;
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: clamp(18px, 3vw, 48px);
     background: transparent;
     border: none;
-    padding: 0;
+    padding: 12px 0;
     margin: 0 0 30px 0;
     width: 100%;
     opacity: 1;
+    cursor: pointer;
+    transition: transform 0.35s ease, opacity 0.35s ease, box-shadow 0.35s ease;
+    outline: none;
+    align-items: start;
+    transform-origin: left center; /* para crescer para a direita sem deslocar o layout */
+    will-change: transform;
 }
 
 /* Layout vertical simples conforme Figma */
@@ -377,9 +439,11 @@ img {
     font-family: 'Titillium Web', sans-serif;
     font-weight: 600;
     line-height: 1;
-    color: #FFFFFF;
-    margin: 0 0 12px 0;
+    color: rgba(255, 255, 255, 0.68);
+    margin: 0;
     text-transform: uppercase;
+    transition: color 0.35s ease;
+    white-space: nowrap;
 }
 
 .stat-item-1 .stat-number {
@@ -391,31 +455,68 @@ img {
 }
 
 .stat-item-3 .stat-number {
-    font-size: 72px;
-    color: #FEE644 !important; /* Amarelo para destaque */
+    font-size: 67px;
 }
 
 .stat-item-large .stat-number {
     font-size: 72px;
-    margin: 0 0 16px 0;
 }
 
 /* Textos - exatamente como no Figma */
 .stat-text {
     font-family: 'Titillium Web', sans-serif;
     font-weight: 400;
-    font-size: 20px;
+    font-size: 30px;
     line-height: 1.3;
     text-transform: uppercase;
-    color: #FFFFFF;
+    color: rgba(255, 255, 255, 0.55);
     margin: 0;
+    transition: color 0.35s ease, opacity 0.35s ease;
 }
 
 .stat-item-large .stat-text {
-    font-size: 18px;
+    font-size: 30px;
     line-height: 1.3;
     letter-spacing: 0.05em;
     max-width: 600px;
+}
+
+.stat-item:focus-visible {
+    box-shadow: 0 0 0 2px rgba(254, 230, 68, 0.6);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .stats-direct:hover .stat-item,
+    .stats-direct:focus-within .stat-item {
+        opacity: 0.28; /* fundo/itens apagados */
+        transform: translateX(0);
+        box-shadow: none; /* nada de quadrado */
+    }
+
+    .stats-direct:hover .stat-item:hover,
+    .stats-direct:focus-within .stat-item:focus-visible {
+        opacity: 1;
+        transform: translateX(18px) scale(1.10); /* aumento mais perceptível */
+        box-shadow: none; /* remove glow de fundo */
+        z-index: 20; /* por cima dos irmãos durante o zoom */
+    }
+
+    .stats-direct:hover .stat-item:hover .stat-number,
+    .stats-direct:focus-within .stat-item:focus-visible .stat-number {
+        color: #FEE644; /* destaque amarelo no número */
+        text-shadow: 0 0 16px rgba(254, 230, 68, 0.45);
+        transform: scale(1.02); /* reforça o aumento no texto */
+        display: inline-block;
+    }
+
+    .stats-direct:hover .stat-item:hover .stat-text,
+    .stats-direct:focus-within .stat-item:focus-visible .stat-text {
+        color: #FEE644; /* descrição amarela também */
+        text-shadow: 0 0 12px rgba(254, 230, 68, 0.35);
+        transform: scale(1.02); /* reforça o aumento no texto */
+        display: inline-block;
+    }
+
 }
 
 /* Elementos decorativos */
@@ -496,6 +597,9 @@ img {
     .stat-number { font-size: 40px; }
     .stat-text { font-size: 16px; }
     .numbers-title { font-size: 20px; }
+    .stat-item { grid-template-columns: 1fr; }
+    .stat-number { margin-bottom: 12px; }
+    .stat-item-large .stat-number { margin-bottom: 16px; }
 }
 
 /* ====================================
@@ -867,42 +971,82 @@ img {
    ==================================== */
 
 .cases-section {
-    background: #1E2F3C;
-    padding: 120px 0;
-    min-height: 962px;
+    background-color: #1E2F3C;
+    min-height: 100vh;
     position: relative;
+    overflow: hidden;
+    transition: background-color 0.6s ease;
+}
+
+.cases-section .container {
+    height: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(80px, 10vh, 120px) clamp(40px, 8vw, 120px);
+    box-sizing: border-box;
+}
+
+.cases-section .section-header {
+    position: relative;
+    margin-bottom: clamp(32px, 6vh, 64px);
+    z-index: 5;
+}
+
+.cases-list {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
 }
 
 .case-content {
+    position: absolute;
+    inset: 0;
     display: grid;
-    grid-template-columns: 604px 1fr;
-    gap: 80px;
-    margin-top: 80px;
+    grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 96px);
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.case-content.is-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Logo no canto superior direito do cabeçalho da seção Cases */
+.cases-logo-mark {
+    position: absolute;
+    top: -25px; /* ajuste fino para alinhar à linha */
+    right: 0;
+    width: 85.45px;
+    height: 65px;
+    display: inline-block;
+    background-image: url('../../img/logo.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    pointer-events: none;
 }
 
 .case-mockup {
     position: relative;
-    background: #FEB315;
-    height: 453px;
-    padding: 40px;
+    height: 100%;
+    padding: clamp(24px, 4vw, 48px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.mockup-desktop {
+.mockup-img {
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
 }
-
-.mockup-mobile {
-    position: absolute;
-    right: 40px;
-    top: 0;
-    width: 213px;
-    height: 442px;
-    transform: rotate(15deg);
-}
-
 .case-info {
-    padding-top: 60px;
+    padding-top: 40px;
 }
 
 .case-title {
@@ -912,6 +1056,7 @@ img {
     color: #86D2DB;
     margin-bottom: 40px;
 }
+.case-line { height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left center; margin: -24px 0 24px; opacity: .9; }
 
 .case-features {
     list-style: none;
@@ -941,6 +1086,87 @@ img {
 .case-buttons {
     display: flex;
     gap: 20px;
+}
+
+/* Temas de case (cores diferentes) */
+.case-item.theme-default .case-title { color: #86D2DB; }
+.case-item.theme-default .btn-outline { border-color: #4EC1B6; color: #4EC1B6; }
+.case-item.theme-default .btn-outline:hover { background: #4EC1B6; color: #1E2F3C; }
+
+.case-item.theme-yellow .case-title { color: #FEE644; }
+.case-item.theme-yellow .btn-outline { border-color: #FEE644; color: #FEE644; }
+.case-item.theme-yellow .btn-outline:hover { background: #FEE644; color: #1E2F3C; }
+
+/* Linha animada no header dos cases */
+.cases-anim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+}
+.cases-anim-line {
+    width: 100%;
+    height: 2px;
+    background: #F6EFD1;
+    transform: scaleX(0);
+    transform-origin: left center;
+}
+
+@media (max-width: 991px) {
+    .cases-section {
+        min-height: auto;
+        overflow: visible;
+    }
+
+    .cases-section .container {
+        min-height: auto;
+        padding: 80px 32px;
+    }
+
+    .cases-list {
+        position: static;
+        overflow: visible;
+    }
+
+    .case-content {
+        position: relative;
+        opacity: 1;
+        pointer-events: auto;
+        grid-template-columns: 1fr;
+        gap: 32px;
+        transition: none;
+    }
+
+    .case-content:not(:last-child) {
+        margin-bottom: 64px;
+    }
+
+    .case-mockup {
+        order: -1;
+        height: auto;
+        padding: 0;
+        justify-content: flex-start;
+    }
+
+    .case-info {
+        padding-top: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .cases-section .container {
+        padding: 64px 20px;
+    }
+
+    .case-title {
+        font-size: 32px;
+    }
+
+    .case-features li {
+        font-size: 18px;
+        line-height: 150%;
+    }
 }
 
 .btn-outline,
@@ -988,43 +1214,162 @@ img {
     color: #fff;
 }
 .localizacao-bg {
-    position: absolute; inset: 0; z-index: 1;
+    position: absolute; 
+    inset: 0; 
+    z-index: 1;
 }
-.localizacao-bg img { width: 100%; height: 107%; object-fit: cover; }
+.localizacao-bg img { 
+    width: 100%; 
+    height: 107%; 
+    object-fit: cover; 
+}
+
 .localizacao-overlay {
-    position: absolute; inset: 0; z-index: 2;
+    position: absolute; 
+    inset: 0; 
+    z-index: 2;
     background: rgba(0,0,0,.6);
 }
+
+/* Barra superior com linha */
 .localizacao-topbar {
-    position: relative; z-index: 5; padding-top: 28px;
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    z-index: 5; 
+    padding-top: 28px;
+}
+.localizacao-topbar .topbar-content {
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px;
 }
 .localizacao-topbar .brand {
-    position: absolute; top: 24px; left: 0; font-weight: 700; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; opacity: .9;
+    font-weight: 700; 
+    font-size: 20px; 
+    letter-spacing: .06em; 
+    text-transform: uppercase; 
+    opacity: .95; 
+    white-space: nowrap; 
+    font-family: 'Titillium Web', 'TitilliumWeb', sans-serif;
 }
-.localizacao-topbar .brand .dot { display: inline-block; width: 7px; height: 7px; background: #FEB315; border-radius: 50%; margin-left: 8px; vertical-align: middle; }
-.localizacao-topbar .topline { height: 2px; background: rgba(255,255,255,.35); margin-top: 36px; }
+.localizacao-topbar .brand .dot { 
+    display: inline-block; 
+    width: 16px; 
+    height: 16px; 
+    background: #FF9B04; 
+    border-radius: 50%; 
+    margin: 0px 0px 6px 6px;
+    vertical-align: middle; 
+}
 
+.localizacao-topbar .topline { height: 1px; 
+    background: rgba(255,255,255,.25);
+    width: 100%; 
+}
+
+/* Conteúdo central */
 .localizacao-inner {
-    position: relative; z-index: 5; padding-top: 120px;
+    position: relative; 
+    z-index: 5; 
+    padding-top: 120px;
 }
 .localizacao-title {
-    font-weight: 600; font-size: 88px; line-height: 90%; letter-spacing: .01em; text-transform: uppercase;
+    font-weight: 600; 
+    font-size: 88px; 
+    line-height: 90%; 
+    letter-spacing: .01em; 
+    text-transform: uppercase;
 }
 .localizacao-cta {
-    margin-top: 28px; display: inline-block; font-weight: 600; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #fff; text-decoration: none;
+    margin-top: 28px; 
+    display: inline-block; 
+    font-weight: 600; 
+    font-size: 12px; 
+    letter-spacing: .08em; 
+    text-transform: uppercase; 
+    color: #fff; 
+    text-decoration: none;
     position: relative; padding-top: 18px;
 }
-.localizacao-cta::before { content: ''; position: absolute; top: 0; left: 0; width: 180px; height: 2px; background: rgba(255,255,255,.35); }
-
-.localizacao-bottom {
-    position: absolute; left: 0; right: 0; bottom: 24px; z-index: 5;
+.localizacao-cta::before { 
+    content: ''; 
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 180px;
+    height: 2px; 
+    background: rgba(255,255,255,.35); 
 }
-.localizacao-bottom .bottom-line { height: 2px; background: rgba(255,255,255,.2); margin-bottom: 14px; }
-.localizacao-bottom .bottom-content { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-.localizacao-bottom .address { font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; opacity: .9; }
-.localizacao-bottom .sala { display: flex; align-items: baseline; gap: 10px; }
-.localizacao-bottom .sala-label { font-weight: 800; font-size: 12px; letter-spacing: .08em; opacity: .9; }
-.localizacao-bottom .sala-num { font-weight: 900; font-size: 56px; color: #FEE644; }
+
+/* Barra inferior com linha */
+.localizacao-bottom {
+    position: absolute; 
+    left: 0;
+    right: 0; 
+    bottom: 24px; 
+    z-index: 5;
+}
+.localizacao-bottom .bottom-content { 
+    display: flex; 
+    align-items: center; 
+    justify-content: 
+    space-between; 
+    gap: 24px; 
+    padding-bottom: 16px;
+}
+.localizacao-bottom .bottom-line { 
+    height: 1px; 
+    background: rgba(255,255,255,.25); 
+    width: 100%;
+}
+.localizacao-bottom .address { 
+    font-weight: 700; 
+    font-size: 12px; 
+    letter-spacing: .08em; 
+    text-transform: uppercase; 
+    opacity: .9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.localizacao-bottom .address .location-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.localizacao-bottom .sala { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+}
+
+.localizacao-bottom .sala-label {
+    font-weight: 800; 
+    font-size: 12px; 
+    letter-spacing: .08em; 
+    opacity: .9; 
+}
+
+.localizacao-bottom .sala-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+}
+
+.localizacao-bottom .sala-icon img,
+.localizacao-bottom .sala-icon svg {
+    height: 60px;
+    width: auto;
+    display: block;
+    max-width: 150px;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(85%) sepia(58%) saturate(646%) hue-rotate(357deg) brightness(104%) contrast(101%);
+}
 
 /* ====================================
    Footer logo (bloco vermelho dinâmico)
@@ -1043,8 +1388,18 @@ img {
 .footer-section.footer-theme-dark { background: #1E2F3C; }
 .footer-section.footer-theme-yellow { background: #FEE644; }
 
-.footer-logo-giant { position: relative; z-index: 2; width: min(80vw, 980px); opacity: 1; filter: drop-shadow(0 10px 30px rgba(0,0,0,.25)); }
-.footer-logo-giant img { width: 100%; height: auto; display: block; }
+.footer-logo-giant { 
+    position: relative; 
+    z-index: 2;
+    width: min(80vw, 980px); 
+    opacity: 1; 
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,.25)); 
+    }
+.footer-logo-giant img { 
+    width: 100%; 
+    height: auto; 
+    display: block; 
+}
 
 /* Footer do tipo painel (full viewport) */
 .footer-section.footer-panels {
@@ -1096,4 +1451,6 @@ img {
 @media (max-width: 768px) {
   .localizacao-title { font-size: 48px; }
   .localizacao-bottom .sala-num { font-size: 40px; }
+  .localizacao-bottom .bottom-content { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .localizacao-topbar .topbar-content { gap: 12px; }
 }

@@ -207,19 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Efeito de destaque para item amarelo
-        if (item.classList.contains('stat-highlight')) {
-            gsap.to(item, {
-                scrollTrigger: {
-                    trigger: item,
-                    start: 'top 60%',
-                    toggleActions: 'play none none reverse'
-                },
-                scale: 1.05,
-                duration: 0.5,
-                ease: 'back.out(1.2)'
-            });
-        }
     });
 
 
@@ -388,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
-    // Photo scale animation
+    // Team photos - entrada sutil (sem girar)
     const memberPhotos = gsap.utils.toArray('.member-photo');
     memberPhotos.forEach(photo => {
         gsap.from(photo, {
@@ -397,10 +384,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 start: 'top 80%',
                 toggleActions: 'play none none reverse'
             },
-            scale: 0,
-            rotation: 360,
-            duration: 1,
-            ease: 'back.out(1.2)'
+            opacity: 0,
+            y: 20,
+            scale: 0.94,
+            duration: 0.8,
+            ease: 'power2.out'
         });
     });
 
@@ -553,6 +541,188 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cases Section Animations
     // ====================================
     
+    // Animação por case: cada .toggle cria a própria linha animada
+    gsap.registerPlugin(ScrollTrigger);
+    const redLog = document.querySelector('.red-log');
+    const redProgress = document.querySelector('.red-progress');
+    function logRed(text) { if (redLog) redLog.innerHTML += text + '<br>'; }
+
+    const casesSection = document.querySelector('.cases-section');
+    const caseItems = casesSection ? gsap.utils.toArray('.cases-list .case-item') : [];
+    const caseLines = caseItems.map(item => item.querySelector('.line-1'));
+    const fallbackCasesBg = casesSection ? window.getComputedStyle(casesSection).backgroundColor : '#1E2F3C';
+    let currentCaseBg = null;
+
+    const setCaseBackground = (item, immediate = false) => {
+        if (!casesSection || !item) return;
+        const color = item.dataset ? item.dataset.bg || fallbackCasesBg : fallbackCasesBg;
+        if (!color || color === currentCaseBg && !immediate) return;
+        currentCaseBg = color;
+        gsap.to(casesSection, {
+            backgroundColor: color,
+            duration: immediate ? 0 : 0.6,
+            ease: 'power1.out',
+            overwrite: 'auto'
+        });
+    };
+
+    const animateCaseEntry = (item) => {
+        if (!item) return;
+        if (item.__caseEntryTimeline) {
+            item.__caseEntryTimeline.kill();
+        }
+        const mockup = item.querySelector('.case-mockup');
+        const title = item.querySelector('.case-title');
+        const features = gsap.utils.toArray(item.querySelectorAll('.case-features li'));
+        const buttons = item.querySelector('.case-buttons');
+
+        const tl = gsap.timeline({ defaults: { ease: 'power2.out', overwrite: 'auto' } });
+        if (mockup) {
+            tl.fromTo(mockup, { autoAlpha: 0, y: 80, rotate: -5 }, { autoAlpha: 1, y: 0, rotate: 0, duration: 0.6 });
+        }
+        if (title) {
+            tl.fromTo(title, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.5 }, '-=0.35');
+        }
+        if (features.length) {
+            tl.fromTo(features, { autoAlpha: 0, x: -30 }, { autoAlpha: 1, x: 0, duration: 0.4, stagger: 0.08 }, '-=0.25');
+        }
+        if (buttons) {
+            tl.fromTo(buttons, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.4 }, '-=0.2');
+        }
+        item.__caseEntryTimeline = tl;
+    };
+
+    if (casesSection && caseItems.length) {
+        const mm = gsap.matchMedia();
+        setCaseBackground(caseItems[0], true);
+
+        mm.add('(min-width: 992px)', () => {
+            const totalCases = caseItems.length;
+            let activeIndex = 0;
+
+            caseItems.forEach((item, idx) => {
+                item.style.zIndex = String(totalCases - idx);
+                gsap.set(item, { autoAlpha: idx === 0 ? 1 : 0 });
+                item.classList.toggle('is-active', idx === 0);
+            });
+
+            caseLines.forEach(line => line && gsap.set(line, { scaleX: 0 }));
+            animateCaseEntry(caseItems[0]);
+
+            const trigger = ScrollTrigger.create({
+                trigger: casesSection,
+                start: 'top top',
+                end: () => '+=' + window.innerHeight * totalCases,
+                pin: true,
+                anticipatePin: 1,
+                scrub: true,
+                snap: totalCases > 1 ? {
+                    snapTo: (value) => {
+                        const snapIndex = Math.round(value * (totalCases - 1));
+                        return (totalCases - 1) ? snapIndex / (totalCases - 1) : 0;
+                    },
+                    duration: 0.5,
+                    ease: 'power1.inOut'
+                } : false,
+                onUpdate: self => {
+                    const raw = self.progress * totalCases;
+                    const newIndex = Math.min(totalCases - 1, Math.floor(raw));
+                    const segProgress = gsap.utils.clamp(0, 1, raw - newIndex);
+
+                    if (newIndex !== activeIndex) {
+                        activeIndex = newIndex;
+                        caseItems.forEach((item, idx) => {
+                            const isActive = idx === activeIndex;
+                            item.classList.toggle('is-active', isActive);
+                            gsap.to(item, { autoAlpha: isActive ? 1 : 0, duration: 0.35, overwrite: 'auto' });
+                        });
+                        animateCaseEntry(caseItems[activeIndex]);
+                        setCaseBackground(caseItems[activeIndex]);
+                        logRed(`case ${activeIndex + 1} active`);
+                    }
+
+                    caseLines.forEach((line, idx) => {
+                        if (!line) return;
+                        if (idx < activeIndex) {
+                            gsap.set(line, { scaleX: 1 });
+                        } else if (idx === activeIndex) {
+                            gsap.set(line, { scaleX: segProgress });
+                        } else {
+                            gsap.set(line, { scaleX: 0 });
+                        }
+                    });
+
+                    if (redProgress) {
+                        redProgress.innerText = 'progress: ' + segProgress.toFixed(3);
+                    }
+                },
+                onRefresh: () => {
+                    caseItems.forEach((item, idx) => {
+                        gsap.set(item, { autoAlpha: idx === activeIndex ? 1 : 0 });
+                        item.classList.toggle('is-active', idx === activeIndex);
+                    });
+                    caseLines.forEach((line, idx) => {
+                        if (!line) return;
+                        gsap.set(line, { scaleX: idx < activeIndex ? 1 : idx === activeIndex ? 0 : 0 });
+                    });
+                    setCaseBackground(caseItems[activeIndex], true);
+                }
+            });
+
+            return () => {
+                trigger.kill();
+                caseItems.forEach(item => {
+                    gsap.set(item, { clearProps: 'all' });
+                    item.classList.remove('is-active');
+                    item.style.zIndex = '';
+                });
+                caseLines.forEach(line => line && gsap.set(line, { clearProps: 'all' }));
+                setCaseBackground(caseItems[0], true);
+            };
+        });
+
+        mm.add('(max-width: 991px)', () => {
+            setCaseBackground(caseItems[0], true);
+            animateCaseEntry(caseItems[0]);
+            const triggers = caseItems.map((item, idx) => {
+                item.style.zIndex = '';
+                item.classList.remove('is-active');
+                gsap.set(item, { clearProps: 'all' });
+                const line = caseLines[idx];
+                if (line) gsap.set(line, { scaleX: 0 });
+
+                return ScrollTrigger.create({
+                    trigger: item,
+                    start: 'top 80%',
+                    end: 'bottom 40%',
+                    onEnter: () => {
+                        setCaseBackground(item);
+                        if (line) gsap.to(line, { scaleX: 1, duration: 0.6, ease: 'none' });
+                        animateCaseEntry(item);
+                        logRed(`onEnter #${idx + 1}`);
+                    },
+                    onEnterBack: () => {
+                        setCaseBackground(item);
+                        if (line) gsap.to(line, { scaleX: 1, duration: 0.6, ease: 'none' });
+                        animateCaseEntry(item);
+                        logRed(`onEnterBack #${idx + 1}`);
+                    },
+                    onLeave: () => {
+                        logRed(`onLeave #${idx + 1}`);
+                    },
+                    onLeaveBack: () => {
+                        if (line) gsap.to(line, { scaleX: 0, duration: 0.4, ease: 'none' });
+                        logRed(`onLeaveBack #${idx + 1}`);
+                    }
+                });
+            });
+
+            return () => {
+                triggers.forEach(st => st.kill());
+            };
+        });
+    }
+
     gsap.from('.cases-section .section-label', {
         scrollTrigger: {
             trigger: '.cases-section',
@@ -564,85 +734,6 @@ document.addEventListener('DOMContentLoaded', function() {
         duration: 0.8,
         ease: 'power2.out'
     });
-
-    gsap.from('.case-mockup', {
-        scrollTrigger: {
-            trigger: '.case-content',
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        y: 60,
-        rotation: -5,
-        duration: 1,
-        ease: 'power2.out'
-    });
-
-    gsap.from('.mockup-desktop', {
-        scrollTrigger: {
-            trigger: '.case-mockup',
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        scale: 0.8,
-        duration: 1,
-        delay: 0.2,
-        ease: 'back.out(1.2)'
-    });
-
-    gsap.from('.mockup-mobile', {
-        scrollTrigger: {
-            trigger: '.case-mockup',
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        x: 50,
-        rotation: 45,
-        duration: 1,
-        delay: 0.4,
-        ease: 'back.out(1.2)'
-    });
-
-    gsap.from('.case-title', {
-        scrollTrigger: {
-            trigger: '.case-info',
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        y: 40,
-        duration: 0.8,
-        ease: 'power2.out'
-    });
-
-    const caseFeatures = gsap.utils.toArray('.case-features li');
-    gsap.from(caseFeatures, {
-        scrollTrigger: {
-            trigger: '.case-features',
-            start: 'top 75%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        x: -40,
-        stagger: 0.1,
-        duration: 0.6,
-        ease: 'power2.out'
-    });
-
-    gsap.from('.case-buttons', {
-        scrollTrigger: {
-            trigger: '.case-buttons',
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-        },
-        opacity: 0,
-        y: 30,
-        duration: 0.8,
-        ease: 'power2.out'
-    });
-
     // ====================================
     // Footer Section - Logo Dinâmico (LEGADO, protegido)
     // ====================================

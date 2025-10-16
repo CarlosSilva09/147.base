@@ -11,11 +11,6 @@
     <!-- Seção Hero - EXATAMENTE COMO FIGMA -->
     <section id="home" class="hero-section">
         <div class="hero-container">
-            <!-- Logo pequeno no canto -->
-            <div class="hero-logo-small">
-                <img src="img/logo.webp" alt="147.digital Logo">
-            </div>
-            
             <!-- Conteúdo principal -->
             <div class="hero-main-content">
                 <div class="hero-text-section">
@@ -25,15 +20,17 @@
                         <span class="hero-text-red">Somos</span>
                     </h1>
                     
-                    <!-- Elemento 147 vermelho conforme Figma -->
-                    <div class="hero-147-element">
-                        <div class="hero-147-symbol">147</div>
-                        <div class="hero-147-text">DIGITAL</div>
-                    </div>
-                    
-                    <!-- Círculo amarelo com ícone conforme Figma -->
-                    <div class="hero-yellow-circle">
-                        <img src="img/elemento_01.webp" alt="Ícone">
+                    <!-- Bloco abaixo do título: logo 147 + ícone amarelo -->
+                    <div class="hero-below-title">
+                        <!-- Elemento 147 vermelho conforme Figma -->
+                        <div class="hero-logo-small">
+                            <img src="img/logo.webp" alt="147.digital Logo">
+                        </div>
+                        
+                        <!-- Ícone amarelo do Figma -->
+                        <div class="hero-yellow-circle">
+                            <img src="img/icone-amarelo-hero (2).svg" alt="Ícone amarelo">
+                        </div>
                     </div>
                 </div>
                 
@@ -45,6 +42,9 @@
             
             <!-- Grid de transição -->
             <div class="hero-transition-grid"></div>
+
+            <!-- Elemento decorativo no canto direito -->
+            <img class="hero-corner-element" src="img/elemento-hero-cantodireito.webp" alt="Elemento decorativo canto direito"/>
         </div>
     </section>
 
@@ -62,8 +62,7 @@
             <span class="watermark-word">SEO</span>
             <span class="watermark-word">DESIGN</span>
             <span class="watermark-word">MARKETING</span>
-            <span class="watermark-word">SOCIAL</span>
-            <span class="watermark-word">MEDIA</span>
+            <span class="watermark-word">SOCIALMEDIA</span>
         </div>
         
         
@@ -77,25 +76,25 @@
             <!-- Estatísticas - layout direto conforme Figma -->
             <div class="stats-direct">
                 <!-- +1.000 E-MAILS -->
-                <div class="stat-item stat-item-1">
+                <div class="stat-item stat-item-1" tabindex="0">
                     <div class="stat-number">+1.000</div>
                     <div class="stat-text">MAILS MARKETING DISPARADOS</div>
                 </div>
                 
                 <!-- +40.000 HORAS -->
-                <div class="stat-item stat-item-2">
+                <div class="stat-item stat-item-2" tabindex="0">
                     <div class="stat-number">+40.000</div>
                     <div class="stat-text">HORAS EXECUTADAS EM PROJETOS</div>
                 </div>
                 
                 <!-- +1.7 MILHÕES (DESTAQUE AMARELO) -->
-                <div class="stat-item stat-item-3 stat-highlight">
+                <div class="stat-item stat-item-3 stat-highlight" tabindex="0">
                     <div class="stat-number">+1.7 MILHÕES</div>
                     <div class="stat-text">DE REAIS (R$) GERENCIADOS EM CAMPANHAS</div>
                 </div>
                 
                 <!-- +50 MILHÕES (GRANDE) -->
-                <div class="stat-item stat-item-large">
+                <div class="stat-item stat-item-large" tabindex="0">
                     <div class="stat-number">+50 MILHÕES</div>
                     <div class="stat-text">DE REAIS (R$) GERADOS EM OPORTUNIDADE DE VENDAS COM LEADS ENTREGUES AOS CLIENTES NOS ÚLTIMOS 12 MESES</div>
                 </div>
@@ -222,6 +221,19 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="card card--teal" data-index="2">
+                    <div class="card__inner">
+                        <div class="card__image-container">
+                            <img class="card__image" src="img/serv_01.webp" alt="Serviço 3" />
+                        </div>
+                        <div class="card__content">
+                            <div class="card__number">03</div>
+                            <h3 class="card__title">LORE IPSUM DOLOR MET</h3>
+                            <p class="card__description">O mantra da 147 Digital é fazer entregas de excelência. Lideramos a frente da inovação tecnológica e das IAs, aplicadas ao CRM Estratégico e Automações de MKT como parceiros oficiais RD Station.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="space"></div>
         </div>
@@ -233,20 +245,22 @@
             <div class="section-header">
                 <h2 class="section-label">cases de sucesso</h2>
                 <div class="section-line white"></div>
+                <!-- Logo no canto superior direito (Figma) -->
+                <span class="cases-logo-mark" aria-hidden="true"></span>
+                <!-- Linha animada (GSAP) sobre a linha principal -->
+                <div class="cases-anim"><div class="cases-anim-line line-1"></div></div>
             </div>
             
-            <div class="case-content">
+            <div class="cases-list">
+            <div class="case-content case-item theme-default is-active" data-bg="#0F2735">
                 <div class="case-mockup">
-                    <div class="mockup-desktop">
-                        <img src="img/serv_01.webp" alt="Desktop Mockup">
-                    </div>
-                    <div class="mockup-mobile">
-                        <img src="img/serv_02.webp" alt="Mobile Mockup">
+                    <div class="mockup-img">
+                        <img src="img/fluke.svg" alt="mockup-img">
                     </div>
                 </div>
-                
-                <div class="case-info">
+                <div class="case-info toggle">
                     <h3 class="case-title">Fluke - APP VSA</h3>
+                    <div class="case-line line-1"></div>
                     <ul class="case-features">
                         <li>Refatoração do APP iOS e Android</li>
                         <li>Empresa contratada inicialmente não entregou</li>
@@ -258,6 +272,29 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Case 2: tema diferente -->
+            <div class="case-content case-item theme-yellow" data-bg="#00AE9E">
+                <div class="case-mockup">
+                    <div class="mockup-img">
+                        <img src="img/serv_02.webp" alt="mockup-img">
+                    </div>
+                </div>
+                <div class="case-info toggle">
+                    <h3 class="case-title">Projeto Website 147</h3>
+                    <div class="case-line line-1"></div>
+                    <ul class="case-features">
+                        <li>SEO técnico e Core Web Vitals</li>
+                        <li>Design System e componentes reutilizáveis</li>
+                        <li>Integrações com CRM e automações</li>
+                        <li>Entrega contínua e análises de performance</li>
+                    </ul>
+                    <div class="case-buttons">
+                        <button class="btn-outline">Ver case</button>
+                    </div>
+                </div>
+            </div>
+            </div>
         </div>
     </section>
 
@@ -268,24 +305,35 @@
         </div>
         <div class="localizacao-overlay"></div>
 
-        <div class="localizacao-topbar container">
-            <div class="brand">147 DIGITAL <span class="dot"></span></div>
-            <div class="topline"></div>
+        <!-- Linha superior -->
+        <div class="localizacao-topbar">
+            <div class="container">
+                <div class="topbar-content">
+                    <div class="brand">147 DIGITAL <span class="dot"></span></div>
+                    <div class="topline"></div>
+                </div>
+            </div>
         </div>
 
+        <!-- Conteúdo central -->
         <div class="localizacao-inner container">
             <h2 class="localizacao-title">NOSSO<br>ESCRITÓRIO</h2>
             <a href="#contato" class="localizacao-cta">VENHA NOS CONHECER</a>
         </div>
 
-        <div class="localizacao-bottom container">
-            <div class="bottom-line"></div>
-            <div class="bottom-content">
-                <div class="address">📍 AV. IRENO DA SILVA VENÂNCIO, 199 — GALPÃO 0 - PROTESTANTES, VOTORANTIM</div>
-                <div class="sala">
-                    <span class="sala-label">SALA</span>
-                    <span class="sala-num">0.14</span>
+        <!-- Linha inferior -->
+        <div class="localizacao-bottom">
+            <div class="container">
+                <div class="bottom-content">
+                    <div class="address"><img src="img/icon-park-outline_local-two.svg" alt="Localização" class="location-icon"> AV. IRENO DA SILVA VENÂNCIO, 199 — GALPÃO 0 - PROTESTANTES, VOTORANTIM</div>
+                    <div class="sala">
+                        <span class="sala-label">SALA</span>
+                        <span class="sala-icon">
+                            <img src="img/Group.svg" alt="0.14">
+                        </span>
+                    </div>
                 </div>
+                <div class="bottom-line"></div>
             </div>
         </div>
     </section>
