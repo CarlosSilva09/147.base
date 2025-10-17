@@ -7,73 +7,271 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====================================
     // Hero Section Animations - NOVA ESTRUTURA
     // ====================================
-    
-    // Logo pequeno fade in
-    gsap.from('.hero-logo-small', {
-        opacity: 0,
-        y: -50,
-        rotation: -20,
-        duration: 1.2,
-        ease: 'back.out(1.7)'
+    // Entrada minimalista: sutileza, sem rotações ou bounces
+    const tlHeroIn = gsap.timeline({ defaults: { ease: 'power2.out' } });
+    tlHeroIn
+        .from('.hero-title span', { y: 20, autoAlpha: 0, duration: 0.6, stagger: 0.08 }, 0.1)
+        .from('.hero-logo-small', { autoAlpha: 0, y: 14, duration: 0.5 }, 0.3)
+        .from('.hero-yellow-circle', { autoAlpha: 0, scale: 0.94, duration: 0.5 }, 0.35);
+
+    // Lupa (ícone dentro da ampola) girando no centro
+    gsap.to('.hero-yellow-circle img', {
+        rotation: 360,
+        transformOrigin: '50% 50%',
+        ease: 'linear',
+        duration: 6,
+        repeat: -1
     });
 
-    // Hero title animation - palavra por palavra
-    gsap.from('.hero-title', {
-        opacity: 0,
-        y: 100,
-        duration: 1.5,
-        delay: 0.3,
-        ease: 'power3.out'
-    });
+    // Mulher VR - entrada dramática e flutuação cobrindo todo o elemento neon
+    let vrFloatTween = null;
+    let gridTween = null;
+    const getAmp = () => {
+        const root = document.querySelector('.hero-section');
+        const cssVal = getComputedStyle(root).getPropertyValue('--hero-grid-h');
+        const gridH = parseFloat(cssVal) || 60; // fallback
+        return gridH / 2;
+    };
+    const startVrFloat = () => {
+        const target = document.querySelector('.hero-vr-girl');
+        if (!target) return;
+        const amp = getAmp(); // metade p/ cima e metade p/ baixo
+        const floatDuration = 3; // mantém sensação original
+        if (vrFloatTween) vrFloatTween.kill();
+        // Parte do topo (já inicia em -amp), vai até a borda inferior (+amp) e volta
+        vrFloatTween = gsap.to(target, {
+            y: amp,
+            duration: floatDuration,
+            ease: 'sine.inOut',
+            repeat: -1,
+            yoyo: true
+        });
 
-    // Elemento 147 vermelho
-    gsap.from('.hero-147-element', {
-        opacity: 0,
-        x: -150,
-        scale: 0.9,
-        duration: 2,
-        delay: 0.6,
-        ease: 'power2.out'
-    });
+            // Sincroniza o “neon” (grid) para também ir até o fim na mesma cadência
+            const gridEl = document.querySelector('.hero-transition-grid');
+            if (gridEl) {
+                if (gridTween) gridTween.kill();
+                gsap.set(gridEl, { backgroundPosition: '0px 0' });
+                gridTween = gsap.to(gridEl, {
+                    backgroundPosition: '160px 0',
+                    duration: floatDuration,
+                    ease: 'sine.inOut',
+                    repeat: -1,
+                    yoyo: true
+                });
+            }
+    };
 
-    // Círculo amarelo com ícone
-    gsap.from('.hero-yellow-circle', {
-        opacity: 0,
-        scale: 0,
-        rotation: 180,
-        duration: 1,
-        delay: 0.8,
-        ease: 'back.out(1.7)'
-    });
-
-    // Mulher VR - entrada dramática
-    gsap.from('.hero-vr-girl', {
+    // Define a posição inicial no topo da faixa ANTES da animação de entrada
+    gsap.set('.hero-vr-girl', { y: -getAmp() });
+    const vrEnter = gsap.from('.hero-vr-girl', {
         opacity: 0,
         x: 200,
         scale: 1.1,
         duration: 2,
         delay: 0.4,
-        ease: 'power3.out'
+        ease: 'power3.out',
+        onComplete: () => startVrFloat()
+    });
+    // Recalcula amplitude em resize para cobrir todo o grid
+    window.addEventListener('resize', () => {
+        if (document.querySelector('.hero-vr-girl')) {
+            startVrFloat();
+        }
     });
 
-    // Animação flutuante sutil para a mulher VR
-    gsap.to('.hero-vr-girl', {
-        y: -20,
-        duration: 3,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-        delay: 2
-    });
+    // Grid de transição: reveal + efeito de “reflexo” sutil em loop
+    const grid = document.querySelector('.hero-transition-grid');
+    if (grid) {
+    gsap.from(grid, { autoAlpha: 0, y: 40, duration: 0.9, ease: 'power2.out', delay: 0.6 });
+    // o shimmer agora é sincronizado com a flutuação da VR (ver startVrFloat)
+    }
 
-    // Grid de transição
-    gsap.from('.hero-transition-grid', {
-        opacity: 0,
-        y: 100,
-        duration: 1.5,
-        delay: 1,
-        ease: 'power2.out'
-    });
+    // Bagunça sutil das letras ao passar o mouse no título
+    (function scrambleOnHover(){
+        const title = document.querySelector('.hero-title');
+        if (!title) return;
+        // split em spans por caractere (mantém <br> entre linhas)
+        const splitTextNode = (node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const frag = document.createDocumentFragment();
+                const text = node.textContent;
+                for (const ch of text) {
+                    const span = document.createElement('span');
+                    span.className = 'char';
+                    span.textContent = ch;
+                    frag.appendChild(span);
+                }
+                node.parentNode.replaceChild(frag, node);
+            } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'BR') {
+                Array.from(node.childNodes).forEach(splitTextNode);
+            }
+        };
+        Array.from(title.childNodes).forEach(splitTextNode);
+
+        const chars = title.querySelectorAll('.char');
+        const hoverIn = () => {
+            gsap.to(chars, {
+                duration: 0.4,
+                ease: 'power2.out',
+                stagger: { each: 0.006, from: 'random' },
+                // bagunça sutil: pequenos offsets e rotações
+                x: () => gsap.utils.random(-2, 2),
+                y: () => gsap.utils.random(-4, 4),
+                rotation: () => gsap.utils.random(-6, 6),
+            });
+        };
+        const hoverOut = () => {
+            gsap.to(chars, {
+                duration: 0.5,
+                ease: 'power3.out',
+                stagger: { each: 0.004 },
+                x: 0,
+                y: 0,
+                rotation: 0
+            });
+        };
+        title.addEventListener('mouseenter', hoverIn);
+        title.addEventListener('mouseleave', hoverOut);
+        // acessibilidade: foco com teclado também ativa
+        title.addEventListener('focusin', hoverIn);
+        title.addEventListener('focusout', hoverOut);
+    })();
+
+    // Glow sobre o grid em perspectiva (fundo roxo): varre da esquerda para a direita
+    const gridGlow = document.querySelector('.hero-grid-glow');
+    if (gridGlow) {
+        // começa fora da esquerda e atravessa
+        gsap.set(gridGlow, { xPercent: -30 });
+        gsap.to(gridGlow, {
+            xPercent: 130,
+            duration: 6,
+            ease: 'sine.inOut',
+            repeat: -1,
+            yoyo: true
+        });
+    }
+
+    // Animações no próprio SVG oficial (fundo-hero.svg) carregado no <object>
+    const floorObj = document.querySelector('.hero-floor-svg');
+    if (floorObj) {
+        floorObj.addEventListener('load', () => {
+            const svgDoc = floorObj.contentDocument;
+            if (!svgDoc) return;
+            const svgEl = svgDoc.querySelector('svg');
+            if (!svgEl) return;
+
+            // Se o SVG veio como imagem dentro de pattern, criamos um overlay de scan com <rect>
+            // Adiciona defs + gradient e um rect que atravessa
+            const defs = svgDoc.querySelector('defs') || svgDoc.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            if (!defs.parentNode) svgEl.appendChild(defs);
+
+            const gradId = 'scanGradient';
+            let grad = svgDoc.getElementById(gradId);
+            if (!grad) {
+                grad = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+                grad.setAttribute('id', gradId);
+                grad.setAttribute('x1','0'); grad.setAttribute('y1','0'); grad.setAttribute('x2','1'); grad.setAttribute('y2','0');
+                const a = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'stop'); a.setAttribute('offset','0%'); a.setAttribute('stop-color','#FEE644'); a.setAttribute('stop-opacity','0');
+                const b = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'stop'); b.setAttribute('offset','50%'); b.setAttribute('stop-color','#FEE644'); b.setAttribute('stop-opacity','0.35');
+                const c = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'stop'); c.setAttribute('offset','100%'); c.setAttribute('stop-color','#FEE644'); c.setAttribute('stop-opacity','0');
+                grad.appendChild(a); grad.appendChild(b); grad.appendChild(c);
+                defs.appendChild(grad);
+            }
+
+            let scan = svgDoc.getElementById('gh-scan');
+            if (!scan) {
+                scan = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                scan.setAttribute('id','gh-scan');
+                scan.setAttribute('x','0');
+                scan.setAttribute('y','0');
+                scan.setAttribute('width', svgEl.getAttribute('width') || '1440');
+                scan.setAttribute('height', svgEl.getAttribute('height') || '101');
+                scan.setAttribute('fill',`url(#${gradId})`);
+                scan.setAttribute('opacity','0.0');
+                svgEl.appendChild(scan);
+            }
+
+            // Anima: varre da esquerda para a direita e volta
+            gsap.set(scan, { x: -200, opacity: 0.0 });
+            gsap.to(scan, { x: 200, duration: 1.8, ease: 'sine.inOut', yoyo: true, repeat: -1, opacity: 1 });
+        });
+    }
+
+    // ================================
+    // Guitar Hero lanes (SVG inline)
+    // ================================
+    (function initGuitarHeroLanes(){
+        const svg = document.querySelector('.hero-gh');
+        if (!svg) return;
+        const lanes = 12; // número de trilhos
+        const w = 1440;
+        const h = svg.getBoundingClientRect().height || 180;
+        svg.setAttribute('viewBox', `0 0 ${w} ${Math.max(120,h)}`);
+
+        // Limpa conteúdo anterior
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+        // Gradiente de glow
+        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+        grad.setAttribute('id','laneGlow');
+        grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+        grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+        const s1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop'); s1.setAttribute('offset','0%'); s1.setAttribute('stop-color','#FEE644'); s1.setAttribute('stop-opacity','0.9');
+        const s2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop'); s2.setAttribute('offset','100%'); s2.setAttribute('stop-color','#FEE644'); s2.setAttribute('stop-opacity','0.1');
+        grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
+
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('fill','none');
+        g.setAttribute('stroke','url(#laneGlow)');
+        g.setAttribute('stroke-width','6');
+        g.setAttribute('stroke-linecap','round');
+        svg.appendChild(g);
+
+        // Perspectiva fake: convergir para o centro
+        const baseY = (Math.max(120,h)) - 6;
+        const horizonY = 20;
+        const leftStart = -120; // extrapola para fora para dar perspectiva
+        const rightStart = w + 120;
+        for (let i=0;i<lanes;i++){
+            const t = i/(lanes-1);
+            const x1 = leftStart + (w+240)*t*0.88; // ligeiro aperto para posicionar sob a VR
+            const x2 = w/2 + (x1 - w/2)*0.2; // converge em direção ao centro
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('class',`lane lane-${i+1}`);
+            path.setAttribute('d',`M ${x1} ${baseY} L ${x2} ${horizonY}`);
+            path.setAttribute('opacity','0.2');
+            g.appendChild(path);
+        }
+
+        // Linha “scanner” que varre
+        const scan = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        scan.setAttribute('x','0'); scan.setAttribute('y', String(horizonY));
+        scan.setAttribute('width', String(w)); scan.setAttribute('height', String(baseY - horizonY));
+        scan.setAttribute('fill','url(#laneGlow)');
+        scan.setAttribute('opacity','0.0');
+        svg.appendChild(scan);
+
+        // Animações
+        const laneEls = Array.from(svg.querySelectorAll('.lane'));
+        // 1) Pulso sequencial nas lanes
+        gsap.to(laneEls, {
+            opacity: 1,
+            duration: 0.4,
+            stagger: { each: 0.08, yoyo: true, repeat: -1 },
+            ease: 'sine.inOut'
+        });
+
+        // 2) Scanner varrendo
+        gsap.to(scan, {
+            opacity: 0.35,
+            duration: 0.8,
+            ease: 'sine.in',
+            yoyo: true,
+            repeat: -1
+        });
+    })();
 
     // ====================================
     // Numbers Section Animations - NOVA ESTRUTURA

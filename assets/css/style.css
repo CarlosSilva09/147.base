@@ -71,12 +71,11 @@ img {
 .hero-section {
     position: relative;
     min-height: 100vh;
+    --hero-grid-h: 60px; /* altura do grid inferior (usado também p/ alinhar a VR) */
     /* Fundo roxo do Figma */
     /* corrige caminho relativo: CSS está em assets/css e imagem em /img */
     /* ancorado no rodapé e menor para não ocupar toda a tela */
-    background:
-        url('../../img/fundo-hero.webp') bottom center / min(1400px, 88vw) auto no-repeat,
-        #F6EFD1;
+    background: #F6EFD1;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -135,6 +134,13 @@ img {
     position: relative;
     z-index: 5; /* garante texto acima do círculo */
     letter-spacing: -0.02em;
+}
+
+/* caracteres individuais para hover sutil */
+.hero-title .char {
+    display: inline-block;
+    will-change: transform;
+    transform-origin: 50% 60%;
 }
 
 .hero-text-dark {
@@ -200,6 +206,8 @@ img {
     height: 100%;
     object-fit: contain;
     filter: drop-shadow(0 4px 10px rgba(0,0,0,.16));
+    transform-origin: 50% 50%;
+    will-change: transform;
 }
 
 /* Mulher VR */
@@ -207,16 +215,17 @@ img {
     position: relative;
     width: 50%;
     height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     z-index: 3;
 }
 
 .hero-vr-girl img {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(var(--hero-grid-h) / 2); /* alinha a base da cabeça com a metade do grid inferior */
     width: auto;
-    height: 90vh;
-    max-height: 900px;
+    height: min(90vh, 900px);
+    max-height: calc(100vh - (var(--hero-grid-h) / 2));
     object-fit: contain;
     object-position: center bottom;
 }
@@ -227,15 +236,30 @@ img {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: var(--hero-grid-h);
     background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
     background-size: 40px 40px;
+    background-position: 0 0;
+    z-index: 2;
+}
+
+/* Glow sutil sobre o grid em perspectiva (fundo roxo) */
+.hero-grid-glow {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--hero-grid-h));
+    height: clamp(120px, 22vh, 260px);
+    pointer-events: none;
+    background: radial-gradient(120px 40px at 0% 100%, rgba(254,230,68,0.25), rgba(254,230,68,0) 70%);
+    mix-blend-mode: screen;
+    opacity: 0.65;
     z-index: 2;
 }
 
 @media (max-width: 1280px) {
     .hero-title { font-size: 100px; }
-    .hero-vr-girl img { height: 80vh; }
+    .hero-vr-girl img { height: min(80vh, 820px); }
     .hero-yellow-circle {
         --circle-size: clamp(108px, 13vw, 156px);
         top: calc(var(--circle-size) * -0.40);
@@ -245,7 +269,7 @@ img {
 
 @media (max-width: 1024px) {
     .hero-title { font-size: 80px; }
-    .hero-vr-girl img { height: 70vh; }
+    .hero-vr-girl img { height: min(70vh, 720px); }
     .hero-yellow-circle {
         --circle-size: clamp(96px, 16vw, 140px);
         top: calc(var(--circle-size) * -0.40);
@@ -259,7 +283,7 @@ img {
     .hero-main-content { flex-direction: column; }
     .hero-title { font-size: 56px; }
     .hero-vr-girl { width: 100%; height: 50vh; }
-    .hero-vr-girl img { height: auto; max-height: 400px; }
+    .hero-vr-girl img { position: relative; left: 50%; transform: translateX(-50%); bottom: 0; height: auto; max-height: 400px; }
     .hero-yellow-circle {
         position: relative;
         left: auto;
@@ -279,6 +303,7 @@ img {
     height: auto;
     z-index: 6; /* acima da girl (z-index:3) e do círculo (z-index:4) */
     pointer-events: none;
+    top: 93%;
 }
 
 @media (max-width: 1024px) {
@@ -705,11 +730,14 @@ img {
 }
 
 .team-left {
-    background: #1E2F3C;
+    background: #F6EFD1;
     padding: 120px 98px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.6s ease-in-out, box-shadow 0.5s ease;
 }
 
 .team-right {
@@ -718,11 +746,15 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.6s ease-in-out, box-shadow 0.5s ease;
 }
 
 .team-member {
     text-align: center;
     max-width: 524px;
+    transition: transform 0.45s ease-out;
 }
 
 .member-photo {
@@ -732,6 +764,8 @@ img {
     overflow: hidden;
     margin: 0 auto 48px;
     background: #D9D9D9;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
+    will-change: transform;
 }
 
 .member-photo img {
@@ -746,10 +780,11 @@ img {
     line-height: 140%;
     text-align: center;
     margin-bottom: 24px;
+    transition: color 0.8s ease-in-out, opacity 0.45s ease;
 }
 
 .team-left .member-name {
-    color: #FFFFFF;
+    color: #1E2F3C;
 }
 
 .team-right .member-name {
@@ -767,10 +802,11 @@ img {
     line-height: 140%;
     text-align: center;
     margin-bottom: 32px;
+    transition: color 0.8s ease-in-out, opacity 0.45s ease;
 }
 
 .team-left .member-bio {
-    color: #FFFFFF;
+    color: #1E2F3C;
 }
 
 .team-right .member-bio {
@@ -781,6 +817,7 @@ img {
     display: flex;
     gap: 16px;
     justify-content: center;
+    will-change: transform, opacity;
 }
 
 .social-link {
@@ -791,8 +828,10 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: transform 0.35s ease, background-color 0.45s ease, border-color 0.45s ease, opacity 0.35s ease;
     text-decoration: none;
+    transform: translateY(4px);
+    opacity: 0.9;
 }
 
 .social-link svg {
@@ -802,12 +841,12 @@ img {
 }
 
 .team-left .social-link {
-    border-color: #FFFFFF;
+    border-color: #1E2F3C;
     background: transparent;
 }
 
 .team-left .social-link svg {
-    fill: #FFFFFF;
+    fill: #1E2F3C;
 }
 
 .team-right .social-link {
@@ -819,16 +858,14 @@ img {
     fill: #1E2F3C;
 }
 
-.social-link:hover {
-    transform: scale(1.1);
-}
+.social-link:hover { transform: translateY(0) scale(1.06); }
 
 .team-left .social-link:hover {
-    background: #FFFFFF;
+    background: #1E2F3C;
 }
 
 .team-left .social-link:hover svg {
-    fill: #1E2F3C;
+    fill: #F6EFD1;
 }
 
 .team-right .social-link:hover {
@@ -837,6 +874,113 @@ img {
 
 .team-right .social-link:hover svg {
     fill: #F6EFD1;
+}
+
+/* Microanimações no hover/focus do bloco */
+.team-left:hover .team-member,
+.team-right:hover .team-member,
+.team-left:focus-within .team-member,
+.team-right:focus-within .team-member {
+    transform: translateY(-2px);
+}
+
+.team-left:hover .member-photo,
+.team-right:hover .member-photo,
+.team-left:focus-within .member-photo,
+.team-right:focus-within .member-photo {
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+}
+
+/* Não alterar letter-spacing para evitar quebra de linhas no hover */
+
+/* Ícones sobem com leve atraso para efeito de cascata */
+.member-social .social-link:nth-child(1) { transition-delay: 0.05s; }
+.member-social .social-link:nth-child(2) { transition-delay: 0.10s; }
+.team-left:hover .member-social .social-link,
+.team-right:hover .member-social .social-link,
+.team-left:focus-within .member-social .social-link,
+.team-right:focus-within .member-social .social-link {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Brilho radial sutil no topo ao ativar */
+.team-left::before,
+.team-right::before {
+    content: "";
+    position: absolute;
+    inset: -15% -10% -5% -10%;
+    background: radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,0.045), rgba(255,255,255,0.015) 45%, rgba(255,255,255,0) 65%);
+    opacity: 0;
+    transform: translateY(8px) scale(1.03);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+.team-left:hover::before,
+.team-right:hover::before,
+.team-left:focus-within::before,
+.team-right:focus-within::before {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Respeita preferências de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+    .team-member,
+    .member-photo,
+    .social-link { transition: none !important; }
+}
+
+/* Hover/focus do bloco inteiro: aplica tema azul temporário */
+.team-left:hover,
+.team-right:hover,
+.team-left:focus-within,
+.team-right:focus-within {
+    background-color: #1E2F3C;
+}
+
+.team-left:hover .member-name,
+.team-right:hover .member-name,
+.team-left:focus-within .member-name,
+.team-right:focus-within .member-name,
+.team-left:hover .member-bio,
+.team-right:hover .member-bio,
+.team-left:focus-within .member-bio,
+.team-right:focus-within .member-bio {
+    color: #FFFFFF;
+}
+
+.team-left:hover .social-link,
+.team-right:hover .social-link,
+.team-left:focus-within .social-link,
+.team-right:focus-within .social-link {
+    border-color: #FFFFFF;
+    background: transparent;
+}
+
+.team-left:hover .social-link svg,
+.team-right:hover .social-link svg,
+.team-left:focus-within .social-link svg,
+.team-right:focus-within .social-link svg {
+    fill: #FFFFFF;
+}
+
+/* Ao focar/hover no ícone dentro do bloco azul, inverter para contraste */
+.team-left:hover .social-link:hover,
+.team-right:hover .social-link:hover,
+.team-left:focus-within .social-link:hover,
+.team-right:focus-within .social-link:hover {
+    background: #FFFFFF;
+}
+
+.team-left:hover .social-link:hover svg,
+.team-right:hover .social-link:hover svg,
+.team-left:focus-within .social-link:hover svg,
+.team-right:focus-within .social-link:hover svg {
+    fill: #1E2F3C;
 }
 
 /* ====================================
@@ -1478,4 +1622,17 @@ img {
   .localizacao-bottom .sala-num { font-size: 40px; }
   .localizacao-bottom .bottom-content { flex-direction: column; align-items: flex-start; gap: 12px; }
   .localizacao-topbar .topbar-content { gap: 12px; }
+}
+
+/* SVG das lanes tipo Guitar Hero */
+/* SVG oficial no rodapé (como background animável) */
+.hero-floor-svg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: clamp(90px, 16vh, 220px);
+    z-index: 2;
+    pointer-events: none;
 }
