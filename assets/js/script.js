@@ -186,6 +186,39 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             // Atualiza do 0 ao alvo mantendo o formato
+        // Animação de digitação para os textos das estatísticas
+        const textEl = item.querySelector('.stat-text');
+        if (textEl) {
+            const fullText = (textEl.textContent || '').trim();
+            // Evita flicker e permite reanimação ao voltar
+            textEl.textContent = '';
+            // Mais cadenciado: aumenta duração por caractere e limita máximos/ mínimos
+            const typeDuration = Math.max(1.2, Math.min(5, fullText.length * 0.08));
+            const stepsCount = Math.max(1, fullText.length);
+
+            ScrollTrigger.create({
+                trigger: item,
+                start: 'top 75%',
+                onEnter: () => {
+                    // mata tweens antigos e começa a digitar novamente
+                    gsap.killTweensOf(textEl);
+                    textEl.classList.add('typing');
+                    gsap.to(textEl, {
+                        text: fullText,
+                        duration: typeDuration,
+                        // Passos discretos por caractere para sensação de batida/ritmo
+                        ease: `steps(${stepsCount})`,
+                        overwrite: 'auto',
+                        onComplete: () => textEl.classList.remove('typing')
+                    });
+                },
+                onLeaveBack: () => {
+                    gsap.killTweensOf(textEl);
+                    textEl.textContent = '';
+                    textEl.classList.remove('typing');
+                }
+            });
+        }
             const counter = { value: 0 };
             gsap.to(counter, {
                 value: targetValue,
