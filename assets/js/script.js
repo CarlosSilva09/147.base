@@ -1,5 +1,9 @@
-// Registrar plugins do GSAP
-gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin, ScrollToPlugin, Observer, Flip, Draggable);
+// Registrar plugins do GSAP (protegido caso algum CDN falhe)
+try {
+    gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin, ScrollToPlugin, Observer, Flip, Draggable);
+} catch (e) {
+    console.warn('GSAP plugins não registrados:', e);
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('GSAP Loaded:', typeof gsap !== 'undefined');
@@ -500,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // About Section Animations
     // ====================================
     
-    gsap.from('.about-section .section-label', {
+    gsap.from('.section-label-red', {
         scrollTrigger: {
             trigger: '.about-section',
             start: 'top 70%',
@@ -648,7 +652,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Services Section - Card Stacking Animations (AAT.js style)
     // ====================================
     
-    gsap.from('.services-section .section-label', {
+    if (document.querySelector('.services-section .section-label')) gsap.from('.services-section .section-label', {
         scrollTrigger: {
             trigger: '.services-section',
             start: 'top 50%',
@@ -671,6 +675,60 @@ document.addEventListener('DOMContentLoaded', function() {
         duration: 1,
         ease: 'power2.out'
     });
+
+    // Anime.js lettering effect for the services headline
+    (function initServicesTitleAnime(){
+        const title = document.querySelector('.services-title');
+        if (!title || typeof anime === 'undefined') return;
+
+        const wrapLetters = (element) => {
+            const nodes = Array.from(element.childNodes);
+            nodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const text = node.textContent || '';
+                    const frag = document.createDocumentFragment();
+                    for (const char of text) {
+                        if (char === ' ') {
+                            frag.appendChild(document.createTextNode(' '));
+                        } else {
+                            const span = document.createElement('span');
+                            span.className = 'letter';
+                            span.textContent = char;
+                            frag.appendChild(span);
+                        }
+                    }
+                    element.replaceChild(frag, node);
+                } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'BR') {
+                    wrapLetters(node);
+                }
+            });
+        };
+
+        if (!title.dataset.animeReady) {
+            wrapLetters(title);
+            title.dataset.animeReady = 'true';
+        }
+
+        const letters = title.querySelectorAll('.letter');
+        if (!letters.length) return;
+
+        ScrollTrigger.create({
+            trigger: '.services-section',
+            start: 'top 60%',
+            once: true,
+            onEnter: () => {
+                anime({
+                    targets: letters,
+                    translateY: [24, 0],
+                    opacity: [0, 1],
+                    rotateX: [-15, 0],
+                    easing: 'easeOutExpo',
+                    duration: 900,
+                    delay: anime.stagger(35)
+                });
+            }
+        });
+    })();
 
     // Empilhamento dos cards (stack) centralizados
     const servicesCardsContainer = document.querySelector('.cards') || document.querySelector('.services-cards');
@@ -954,7 +1012,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    gsap.from('.cases-section .section-label', {
+    if (document.querySelector('.cases-section .section-label')) gsap.from('.cases-section .section-label', {
         scrollTrigger: {
             trigger: '.cases-section',
             start: 'top 70%',
@@ -965,6 +1023,7 @@ document.addEventListener('DOMContentLoaded', function() {
         duration: 0.8,
         ease: 'power2.out'
     });
+
     // ====================================
     // Footer Section - Logo Dinâmico (LEGADO, protegido)
     // ====================================
@@ -1012,7 +1071,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Animações do conteúdo do footer
-    gsap.from('.footer-title', {
+    if (document.querySelector('.footer-title')) gsap.from('.footer-title', {
         scrollTrigger: {
             trigger: '.footer-section',
             start: 'top 70%',
@@ -1024,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power3.out'
     });
 
-    gsap.from('.footer-address', {
+    if (document.querySelector('.footer-address')) gsap.from('.footer-address', {
         scrollTrigger: {
             trigger: '.footer-section',
             start: 'top 60%',
@@ -1037,7 +1096,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
-    gsap.from('.footer-room', {
+    if (document.querySelector('.footer-room')) gsap.from('.footer-room', {
         scrollTrigger: {
             trigger: '.footer-section',
             start: 'top 50%',
@@ -1079,7 +1138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====================================
     
     // Hero image parallax
-    gsap.to('.hero-image', {
+    if (document.querySelector('.hero-image')) gsap.to('.hero-image', {
         scrollTrigger: {
             trigger: '.hero-section',
             start: 'top top',
@@ -1090,8 +1149,8 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'none'
     });
 
-    // Background parallax for numbers section
-    gsap.to('.numbers-bg', {
+    // Background parallax for numbers section (usa .numbers-background img no HTML)
+    if (document.querySelector('.numbers-background img')) gsap.to('.numbers-background img', {
         scrollTrigger: {
             trigger: '.numbers-section',
             start: 'top bottom',
@@ -1103,7 +1162,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Footer background parallax
-    gsap.to('.footer-bg img', {
+    if (document.querySelector('.footer-bg img')) gsap.to('.footer-bg img', {
         scrollTrigger: {
             trigger: '.footer-section',
             start: 'top bottom',

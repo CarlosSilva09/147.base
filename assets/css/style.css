@@ -1005,6 +1005,14 @@ img {
     opacity: 0.15;
     text-align: center;
     margin: 60px 0 80px;
+    position: relative;
+    text-shadow: 0 0 0 rgba(255,255,255,0);
+    animation: services-title-breathe 6.5s ease-in-out infinite;
+}
+
+.services-title .letter {
+    display: inline-block;
+    will-change: transform, opacity;
 }
 
 /* Grid cards estilo antigo, adaptado às classes atuais */
@@ -1013,6 +1021,46 @@ img {
 
 /* Aumenta a largura útil apenas nesta seção para caber texto + imagem */
 .services-section .container { padding: 0 20px; }
+
+/* Brilho de linha sutil sob o título dos serviços */
+.services-title::after {
+        content: "";
+        position: absolute;
+        left: 12%;
+        right: 12%;
+        height: 6px;
+        bottom: -16px;
+        background: linear-gradient(90deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.12) 30%,
+                rgba(255,255,255,0.45) 50%,
+                rgba(255,255,255,0.12) 70%,
+                rgba(255,255,255,0) 100%);
+        border-radius: 4px;
+        filter: blur(0.3px);
+        opacity: 0;
+        transform: translateX(-35%) scaleX(0.6);
+        animation: services-title-sheen 7s ease-in-out infinite 0.8s;
+        pointer-events: none;
+}
+
+@keyframes services-title-breathe {
+    0%, 100% { text-shadow: 0 0 0 rgba(255,255,255,0); }
+    40% { text-shadow: 0 0 10px rgba(255,255,255,0.18), 0 0 22px rgba(255,255,255,0.10); }
+}
+
+@keyframes services-title-sheen {
+    0% { opacity: 0; transform: translateX(-45%) scaleX(0.5); }
+    12% { opacity: .88; }
+    50% { transform: translateX(45%) scaleX(1); }
+    88% { opacity: 0; }
+    100% { opacity: 0; transform: translateX(60%) scaleX(0.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .services-title { animation: none; text-shadow: none; }
+    .services-title::after { animation: none; opacity: 0; }
+}
 
 .cards {
     width: 100%;
