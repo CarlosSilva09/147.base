@@ -871,7 +871,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const mm = gsap.matchMedia();
         setCaseBackground(caseItems[0], true);
 
-        mm.add('(min-width: 992px)', () => {
+    mm.add('(min-width: 0px)', () => {
             const totalCases = caseItems.length;
             let activeIndex = 0;
 
@@ -953,47 +953,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 caseLines.forEach(line => line && gsap.set(line, { clearProps: 'all' }));
                 setCaseBackground(caseItems[0], true);
-            };
-        });
-
-        mm.add('(max-width: 991px)', () => {
-            setCaseBackground(caseItems[0], true);
-            animateCaseEntry(caseItems[0]);
-            const triggers = caseItems.map((item, idx) => {
-                item.style.zIndex = '';
-                item.classList.remove('is-active');
-                gsap.set(item, { clearProps: 'all' });
-                const line = caseLines[idx];
-                if (line) gsap.set(line, { scaleX: 0 });
-
-                return ScrollTrigger.create({
-                    trigger: item,
-                    start: 'top 80%',
-                    end: 'bottom 40%',
-                    onEnter: () => {
-                        setCaseBackground(item);
-                        if (line) gsap.to(line, { scaleX: 1, duration: 0.6, ease: 'none' });
-                        animateCaseEntry(item);
-                        logRed(`onEnter #${idx + 1}`);
-                    },
-                    onEnterBack: () => {
-                        setCaseBackground(item);
-                        if (line) gsap.to(line, { scaleX: 1, duration: 0.6, ease: 'none' });
-                        animateCaseEntry(item);
-                        logRed(`onEnterBack #${idx + 1}`);
-                    },
-                    onLeave: () => {
-                        logRed(`onLeave #${idx + 1}`);
-                    },
-                    onLeaveBack: () => {
-                        if (line) gsap.to(line, { scaleX: 0, duration: 0.4, ease: 'none' });
-                        logRed(`onLeaveBack #${idx + 1}`);
-                    }
-                });
-            });
-
-            return () => {
-                triggers.forEach(st => st.kill());
             };
         });
     }
