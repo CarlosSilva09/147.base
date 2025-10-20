@@ -8,6 +8,32 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+    <!-- Header fixo (aparece a partir da 2ª seção) -->
+    <header class="site-header" aria-label="Menu principal">
+        <div class="header-inner">
+            <a class="header-brand" href="#home" aria-label="Ir para o início">
+                <img src="img/logo.webp" alt="147.digital" class="header-logo" />
+            </a>
+            <button class="nav-toggle" aria-controls="site-nav" aria-expanded="false" aria-label="Abrir menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <nav id="site-nav" class="site-nav" aria-label="Navegação principal">
+                <ul class="nav-list">
+                    <li><a href="#numeros">Números</a></li>
+                    <li><a href="#sobre">Quem Somos</a></li>
+                    <li><a href="#equipe">Sócios</a></li>
+                    <li><a href="#servicos">Serviços</a></li>
+                    <li><a href="#cases">Cases</a></li>
+                    <li><a href="#localizacao">Escritório</a></li>
+                </ul>
+            </nav>
+        </div>
+        <!-- Borda inferior com noise + fade para reproduzir Figma -->
+        <div class="header-edge" aria-hidden="true"></div>
+    </header>
+
     <!-- Seção Hero - EXATAMENTE COMO FIGMA -->
     <section id="home" class="hero-section">
         <div class="hero-container">
@@ -76,7 +102,6 @@
             <!-- Header da seção -->
             <div class="numbers-header">
                 <h2 class="numbers-title">147 DIGITAL NOS ÚLTIMOS 03 ANOS</h2>
-                <div class="numbers-line"></div>
             </div>
             
             <!-- Estatísticas - layout direto conforme Figma -->
@@ -324,7 +349,7 @@
         <!-- Conteúdo central -->
         <div class="localizacao-inner container">
             <h2 class="localizacao-title">NOSSO<br>ESCRITÓRIO</h2>
-            <a href="#contato" class="localizacao-cta">VENHA NOS CONHECER</a>
+            <a href="https://maps.app.goo.gl/Uj3oqCqL865Ndz4d8" class="localizacao-cta">VENHA NOS CONHECER</a>
         </div>
 
         <!-- Linha inferior -->
@@ -347,8 +372,21 @@
     <!-- Seção Footer (logo grande em fundo dinâmico) -->
     <section id="contato" class="footer-panels-section">
         <div class="footer-panels-pin">
-            <div class="footer-logo-giant">
-                <img src="img/logo-footer.webp" alt="147 Digital">
+            <div class="footer-content">
+                <!-- Logo gigante atrás (opacidade baixa) -->
+                <div class="footer-logo-giant">
+                    <img src="img/logo-footer.webp" alt="147 Digital">
+                </div>
+                
+                <!-- Texto na frente -->
+                <h2 class="footer-heading">
+                    <span class="footer-heading-line">Nós resolvemos no digital</span>
+                    <span class="footer-heading-line">o que move o seu negócio.</span>
+                </h2>
+                <div class="footer-cta">
+                    <span class="footer-cta-text">Vem ser</span>
+                    <span class="footer-cta-text">147 Digital</span>
+                </div>
             </div>
         </div>
     </section>

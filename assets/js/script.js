@@ -294,18 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'power2.out'
     });
 
-    gsap.from('.numbers-line', {
-        scrollTrigger: {
-            trigger: '.numbers-section',
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
-        },
-        width: 0,
-        duration: 1.2,
-        delay: 0.2,
-        ease: 'power2.out'
-    });
-
     // Estatísticas - layout direto com contagem animada
     const statItems = gsap.utils.toArray('.stat-item');
     statItems.forEach((item, index) => {
@@ -475,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'back.out(1.2)'
     });
 
-    // Watermark - animação simples conforme Figma
+    // Watermark - animação simples conforme Figma + flutuação contínua
     gsap.from('.numbers-watermark-bg', {
         scrollTrigger: {
             trigger: '.numbers-section',
@@ -485,19 +473,17 @@ document.addEventListener('DOMContentLoaded', function() {
         opacity: 0,
         scale: 0.8,
         duration: 1.5,
-        ease: 'power2.out'
-    });
-
-    // Watermark parallax
-    gsap.to('.numbers-watermark-bg', {
-        scrollTrigger: {
-            trigger: '.numbers-section',
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1
-        },
-        y: -50,
-        ease: 'none'
+        ease: 'power2.out',
+        onComplete: () => {
+            // Inicia flutuação contínua após entrada
+            gsap.to('.numbers-watermark-bg', {
+                y: '+=30',
+                duration: 3,
+                ease: 'sine.inOut',
+                repeat: -1,
+                yoyo: true
+            });
+        }
     });
 
     // ====================================
@@ -1252,4 +1238,95 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     console.log('All GSAP animations initialized ✅');
+
+    // ====================================
+    // Header fixo: aparece a partir da 2ª seção
+    // ====================================
+    (function initStickyHeaderVisibility(){
+        const header = document.querySelector('.site-header');
+        if (!header) return;
+
+        const show = () => header.classList.add('is-visible');
+        const hide = () => header.classList.remove('is-visible');
+
+        // Interações do menu (mobile)
+        const toggleBtn = header.querySelector('.nav-toggle');
+        const setMenuOpen = (open) => {
+            header.classList.toggle('menu-open', open);
+            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', String(!!open));
+        };
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => setMenuOpen(!header.classList.contains('menu-open')));
+        }
+        header.querySelectorAll('.nav-list a').forEach(a => a.addEventListener('click', () => setMenuOpen(false)));
+
+        const home = document.querySelector('#home');
+        if (typeof ScrollTrigger !== 'undefined' && home) {
+            // Aparece quando o fundo do HERO passa pelo topo da viewport
+            ScrollTrigger.create({
+                trigger: home,
+                start: 'bottom top',
+                onEnter: show,       // descendo: passou do hero -> mostra
+                onLeaveBack: hide    // subindo: voltou para o hero -> esconde
+            });
+
+            // Estado inicial caso a página carregue já rolada
+            const initVisible = (window.scrollY || window.pageYOffset) >= (home.offsetHeight - 10);
+            if (initVisible) show(); else hide();
+        } else {
+            // Fallback sem ScrollTrigger
+            const heroH = () => (home ? home.offsetHeight : window.innerHeight);
+            const onScroll = () => {
+                const y = window.scrollY || window.pageYOffset;
+                if (y >= heroH() - 10) show(); else hide();
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', onScroll);
+            onScroll();
+        }
+    })();
+
+    // ====================================
+    // Scrollspy: marcar link ativo baseado na seção
+    // ====================================
+    (function initScrollSpy(){
+        const header = document.querySelector('.site-header');
+        if (!header) return;
+        const links = Array.from(header.querySelectorAll('.nav-list a[href^="#"]'));
+        if (!links.length) return;
+
+        const map = links
+            .map(a => {
+                const id = decodeURIComponent(a.getAttribute('href') || '').slice(1);
+                const section = id ? document.getElementById(id) : null;
+                return section ? { a, section } : null;
+            })
+            .filter(Boolean);
+
+        const setActive = (el) => {
+            links.forEach(l => l.classList.toggle('active', l === el));
+        };
+
+        if (typeof ScrollTrigger !== 'undefined') {
+            map.forEach(({ a, section }) => {
+                ScrollTrigger.create({
+                    trigger: section,
+                    start: 'top center',
+                    end: 'bottom center',
+                    onEnter: () => setActive(a),
+                    onEnterBack: () => setActive(a)
+                });
+            });
+        } else if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const found = map.find(m => m.section === entry.target);
+                        if (found) setActive(found.a);
+                    }
+                });
+            }, { rootMargin: '-40% 0% -40% 0%', threshold: 0 });
+            map.forEach(m => io.observe(m.section));
+        }
+    })();
 });
