@@ -1195,6 +1195,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const footerPanelsPin = document.querySelector('.footer-panels-pin');
     if (footerPanelsPin) {
         const bgColors = ['#DC473B', '#1E2F3C', '#4EC1B6', '#FEE644', '#DC473B'];
+        const footerTextElements = footerPanelsPin.querySelectorAll('.footer-heading, .footer-cta');
+        const footerLogoGiant = footerPanelsPin.querySelector('.footer-logo-giant');
         const tlFooter = gsap.timeline({
             scrollTrigger: {
                 trigger: '.footer-panels-section',
@@ -1207,6 +1209,24 @@ document.addEventListener('DOMContentLoaded', function() {
         bgColors.forEach((color, i) => {
             tlFooter.to(footerPanelsPin, { backgroundColor: color, duration: 1 }, i);
         });
+        if (footerLogoGiant) {
+            gsap.set(footerLogoGiant, {
+                '--frame-opacity': 0.24,
+                '--logo-img-opacity': 1,
+                '--logo-shadow-opacity': 0.28
+            });
+            tlFooter.to(footerLogoGiant, {
+                '--frame-opacity': 0,
+                '--logo-img-opacity': 0.35,
+                '--logo-shadow-opacity': 0.05,
+                duration: 0.6,
+                ease: 'power2.out'
+            }, bgColors.length - 0.6);
+        }
+        if (footerTextElements.length) {
+            gsap.set(footerTextElements, { autoAlpha: 0, y: 40, rotateX: 15, transformPerspective: 600 });
+            tlFooter.to(footerTextElements, { autoAlpha: 1, y: 0, rotateX: 0, duration: 0.6, ease: 'power3.out', stagger: 0.08 }, bgColors.length - 0.4);
+        }
     }
 
     // ====================================
