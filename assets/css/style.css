@@ -1813,7 +1813,7 @@ img {
 }
 
 .mockup-img {
-    width: clamp(420px, 46vw, 720px);
+    width: clamp(680px, 100%, 1600px);
     aspect-ratio: 604 / 530;
     display: flex;
     align-items: center;

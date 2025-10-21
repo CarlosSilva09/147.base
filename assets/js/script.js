@@ -14,9 +14,94 @@ document.addEventListener('DOMContentLoaded', function() {
     // Entrada minimalista: sutileza, sem rotações ou bounces
     const tlHeroIn = gsap.timeline({ defaults: { ease: 'power2.out' } });
     tlHeroIn
-        .from('.hero-title span', { y: 20, autoAlpha: 0, duration: 0.6, stagger: 0.08 }, 0.1)
+        .from('.hero-main-content', { autoAlpha: 0, duration: 0.8 }, 0)
+        .from('.hero-text-section', { y: 24, autoAlpha: 0, duration: 0.6 }, 0.1)
         .from('.hero-logo-small', { autoAlpha: 0, y: 14, duration: 0.5 }, 0.3)
         .from('.hero-yellow-circle', { autoAlpha: 0, scale: 0.94, duration: 0.5 }, 0.35);
+
+    // Animação de digitação para o título principal
+    const heroTitleLines = gsap.utils.toArray('.hero-title span');
+    const initHeroTitleHover = () => {
+        const title = document.querySelector('.hero-title');
+        if (!title || title.dataset.hoverInit === 'true') return;
+        // split em spans por caractere (mantém <br> entre linhas)
+        const splitTextNode = (node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const frag = document.createDocumentFragment();
+                const text = node.textContent;
+                for (const ch of text) {
+                    const span = document.createElement('span');
+                    span.className = 'char';
+                    span.textContent = ch;
+                    frag.appendChild(span);
+                }
+                node.parentNode.replaceChild(frag, node);
+            } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'BR') {
+                Array.from(node.childNodes).forEach(splitTextNode);
+            }
+        };
+        Array.from(title.childNodes).forEach(splitTextNode);
+
+        const chars = title.querySelectorAll('.char');
+        const hoverIn = () => {
+            gsap.to(chars, {
+                duration: 0.4,
+                ease: 'power2.out',
+                stagger: { each: 0.006, from: 'random' },
+                // bagunça sutil: pequenos offsets e rotações
+                x: () => gsap.utils.random(-2, 2),
+                y: () => gsap.utils.random(-4, 4),
+                rotation: () => gsap.utils.random(-6, 6),
+            });
+        };
+        const hoverOut = () => {
+            gsap.to(chars, {
+                duration: 0.5,
+                ease: 'power3.out',
+                stagger: { each: 0.004 },
+                x: 0,
+                y: 0,
+                rotation: 0
+            });
+        };
+        title.addEventListener('mouseenter', hoverIn);
+        title.addEventListener('mouseleave', hoverOut);
+        // acessibilidade: foco com teclado também ativa
+        title.addEventListener('focusin', hoverIn);
+        title.addEventListener('focusout', hoverOut);
+        title.dataset.hoverInit = 'true';
+    };
+
+    const heroTypingTl = gsap.timeline({
+        paused: true,
+        defaults: { ease: 'none' },
+        onComplete: initHeroTitleHover
+    });
+
+    heroTitleLines.forEach((line, index) => {
+        const fullText = (line.textContent || '').trim();
+        if (!fullText.length) return;
+
+        line.textContent = '';
+
+        const stepsCount = Math.max(1, fullText.length);
+        const typeDuration = Math.max(0.8, Math.min(3, fullText.length * 0.12));
+
+        heroTypingTl.to(line, {
+            text: fullText,
+            duration: typeDuration,
+            ease: `steps(${stepsCount})`,
+            onStart: () => line.classList.add('typing'),
+            onComplete: () => line.classList.remove('typing')
+        }, index === 0 ? 0 : '+=0.25');
+    });
+
+    if (heroTitleLines.length) {
+        tlHeroIn.add(() => heroTypingTl.restart(true), 0.25);
+    } else {
+        // Caso não existam spans para a digitação, ainda inicializa o hover
+        initHeroTitleHover();
+    }
 
     // Lupa (ícone dentro da ampola) girando no centro
     gsap.to('.hero-yellow-circle img', {
@@ -90,57 +175,6 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.from(grid, { autoAlpha: 0, y: 40, duration: 0.9, ease: 'power2.out', delay: 0.6 });
     // o shimmer agora é sincronizado com a flutuação da VR (ver startVrFloat)
     }
-
-    // Bagunça sutil das letras ao passar o mouse no título
-    (function scrambleOnHover(){
-        const title = document.querySelector('.hero-title');
-        if (!title) return;
-        // split em spans por caractere (mantém <br> entre linhas)
-        const splitTextNode = (node) => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                const frag = document.createDocumentFragment();
-                const text = node.textContent;
-                for (const ch of text) {
-                    const span = document.createElement('span');
-                    span.className = 'char';
-                    span.textContent = ch;
-                    frag.appendChild(span);
-                }
-                node.parentNode.replaceChild(frag, node);
-            } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'BR') {
-                Array.from(node.childNodes).forEach(splitTextNode);
-            }
-        };
-        Array.from(title.childNodes).forEach(splitTextNode);
-
-        const chars = title.querySelectorAll('.char');
-        const hoverIn = () => {
-            gsap.to(chars, {
-                duration: 0.4,
-                ease: 'power2.out',
-                stagger: { each: 0.006, from: 'random' },
-                // bagunça sutil: pequenos offsets e rotações
-                x: () => gsap.utils.random(-2, 2),
-                y: () => gsap.utils.random(-4, 4),
-                rotation: () => gsap.utils.random(-6, 6),
-            });
-        };
-        const hoverOut = () => {
-            gsap.to(chars, {
-                duration: 0.5,
-                ease: 'power3.out',
-                stagger: { each: 0.004 },
-                x: 0,
-                y: 0,
-                rotation: 0
-            });
-        };
-        title.addEventListener('mouseenter', hoverIn);
-        title.addEventListener('mouseleave', hoverOut);
-        // acessibilidade: foco com teclado também ativa
-        title.addEventListener('focusin', hoverIn);
-        title.addEventListener('focusout', hoverOut);
-    })();
 
     // Glow sobre o grid em perspectiva (fundo roxo): varre da esquerda para a direita
     const gridGlow = document.querySelector('.hero-grid-glow');
@@ -827,9 +861,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const caseLines = caseItems.map(item => item.querySelector('.line-1'));
     const fallbackCasesBg = casesSection ? window.getComputedStyle(casesSection).backgroundColor : '#1E2F3C';
     let currentCaseBg = null;
+    const CASE_THEMES = ['dark','red','light','deep','teal','yellow','default'];
+
+    const applyCaseTheme = (item) => {
+        if (!casesSection || !item) return;
+        const theme = item.dataset ? item.dataset.theme || '' : '';
+        CASE_THEMES.forEach(name => casesSection.classList.remove(`cases-theme-${name}`));
+        if (theme) {
+            casesSection.classList.add(`cases-theme-${theme}`);
+        }
+    };
 
     const setCaseBackground = (item, immediate = false) => {
         if (!casesSection || !item) return;
+        applyCaseTheme(item);
         const color = item.dataset ? item.dataset.bg || fallbackCasesBg : fallbackCasesBg;
         if (!color || color === currentCaseBg && !immediate) return;
         currentCaseBg = color;
