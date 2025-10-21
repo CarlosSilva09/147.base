@@ -1060,6 +1060,49 @@ img {
     width: 115px;
     height: 101px;
     z-index: 10;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.about-arrow img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.about-arrow::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='16' viewBox='0 0 56 16'%3E%3Cpath fill='%23FF4242' d='M0 7h40l-7-7h7l16 8-16 8h-7l7-7H0z'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 120px 32px;
+    background-position: 0 50%;
+    animation: aboutArrowFlow 2.8s linear infinite;
+    mask-image: url("../img/arrow.svg");
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    mask-position: center;
+    -webkit-mask-image: url("../img/arrow.svg");
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center;
+    opacity: 0.65;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes aboutArrowFlow {
+    from {
+        background-position: 0 50%;
+    }
+    to {
+        background-position: -120px 50%;
+    }
 }
 
 .about-text {

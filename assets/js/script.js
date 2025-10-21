@@ -523,7 +523,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====================================
     // About Section Animations
     // ====================================
-    
+    const ABOUT_ARROW_FLOAT_AMP = 18;
+    let aboutArrowFloatTween = null;
+    const startAboutArrowFloat = () => {
+        const arrow = document.querySelector('.about-arrow');
+        if (!arrow) return;
+        if (aboutArrowFloatTween) aboutArrowFloatTween.kill();
+        aboutArrowFloatTween = gsap.to(arrow, {
+            y: ABOUT_ARROW_FLOAT_AMP,
+            duration: 3,
+            ease: 'sine.inOut',
+            repeat: -1,
+            yoyo: true
+        });
+    };
+
+    gsap.set('.about-arrow', { y: -ABOUT_ARROW_FLOAT_AMP });
+
     gsap.from('.section-label-red', {
         scrollTrigger: {
             trigger: '.about-section',
@@ -572,7 +588,8 @@ document.addEventListener('DOMContentLoaded', function() {
         scale: 0,
         duration: 0.8,
         delay: 0.4,
-        ease: 'back.out(1.7)'
+        ease: 'back.out(1.7)',
+        onComplete: startAboutArrowFloat
     });
 
     gsap.from('.about-text h3', {
