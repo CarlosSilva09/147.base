@@ -63,9 +63,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 0 clamp(40px, 8vw, 120px);
-    background: linear-gradient(180deg, rgba(9, 44, 70, 0.95) 0%, rgba(12, 61, 90, 0.82) 100%);
-    border: 1px solid rgba(70, 150, 210, 0.55);
-    box-shadow: 0 0 36px rgba(0,0,0,0.32);
+    background: linear-gradient(#000000A3 10%, #1E2F3CCC 54%);
     overflow: hidden;
 }
 .header-inner::before {
@@ -424,6 +422,17 @@ img {
     color: #DC473B;
 }
 
+.hero-title span.typing::after {
+    content: '\00a0';
+    display: inline-block;
+    width: 10px;
+    height: 0.9em;
+    margin-left: 4px;
+    background: currentColor;
+    vertical-align: -0.1em;
+    animation: blink-caret 0.9s steps(1, end) infinite;
+}
+
 /* Bloco que agrupa logo e ícone abaixo do título */
 .hero-below-title {
     position: relative;
@@ -487,7 +496,7 @@ img {
 .hero-vr-girl {
     position: relative;
     width: 50%;
-    height: 100vh;
+    height: 120vh;
     z-index: 3;
 }
 
@@ -495,7 +504,7 @@ img {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: calc(var(--hero-grid-h) / 2); /* alinha a base da cabeça com a metade do grid inferior */
+    bottom: calc(var(--hero-grid-h) / 1); /* alinha a base da cabeça com a metade do grid inferior */
     width: auto;
     height: min(90vh, 900px);
     max-height: calc(100vh - (var(--hero-grid-h) / 2));
@@ -1544,7 +1553,16 @@ img {
     margin-left: 60px;
     width: calc(100% - 60px);
 }
-
+.card--blue .card__inner {
+    background: #1E2F3C;
+    margin-left: 60px;
+    width: calc(100% - 60px);
+}
+.card--blue .card__number,
+.card--blue .card__description,
+.card--blue .card__title {
+    color: #FFFFFF !important;
+}
 /* Número e textos como no CSS antigo */
 .card__number {
     /* número integrado ao fluxo para que o título fique logo abaixo */
@@ -1750,7 +1768,7 @@ img {
 .cases-list {
     position: relative;
     flex: 1;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .case-content {
@@ -1795,8 +1813,17 @@ img {
 }
 
 .mockup-img {
+    width: clamp(420px, 46vw, 720px);
+    aspect-ratio: 604 / 530;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mockup-img img {
     width: 100%;
-    max-width: 600px;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 .case-info {
     padding-top: 40px;
@@ -1808,6 +1835,27 @@ img {
     line-height: 120%;
     color: #86D2DB;
     margin-bottom: 40px;
+}
+.case-subtitle {
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    margin: -16px 0 18px;
+}
+.case-subdescription {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 150%;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 36px;
+    max-width: 520px;
+}
+.case-subdescription span {
+    display: block;
+    font-size: 18px;
+    opacity: 0.8;
 }
 .case-line { height: 2px; 
     background: currentColor; 
@@ -1851,12 +1899,80 @@ img {
 .case-item.theme-default .case-title { color: #86D2DB; }
 .case-item.theme-default .btn-outline { border-color: #4EC1B6; color: #4EC1B6; }
 .case-item.theme-default .btn-outline:hover { background: #4EC1B6; color: #1E2F3C; }
+.case-item.theme-default .case-subtitle { color: #86D2DB; }
+.case-item.theme-default .case-subdescription { color: rgba(255,255,255,0.88); }
 
 .case-item.theme-yellow .case-title { color: #1E2F3C; }
 .case-item.theme-yellow .btn-outline { border-color: #1E2F3C; color: #1E2F3C; }
 .case-item.theme-yellow .btn-outline:hover { background: #1E2F3C; color: #4EC1B6; }
 .case-item.theme-yellow .case-features li::before { background: #1E2F3C; }
 .case-item.theme-yellow .case-features li { color: #1E2F3C !important; }
+.case-item.theme-yellow .case-subtitle { color: #1E2F3C; }
+.case-item.theme-yellow .case-subdescription { color: rgba(30, 47, 60, 0.8); }
+.case-item.theme-yellow .case-subdescription span { opacity: 0.7; }
+
+.case-item.theme-red .case-title { color: #FFFFFF; }
+.case-item.theme-red .case-features li { color: #FFFFFF !important; }
+.case-item.theme-red .case-features li::before { background: #FEE644; }
+.case-item.theme-red .btn-outline { border-color: #FEE644; color: #FEE644; }
+.case-item.theme-red .btn-outline:hover { background: #FEE644; color: #B32E2A; }
+.case-item.theme-red .case-subtitle { color: rgba(255,255,255,0.85); }
+.case-item.theme-red .case-subdescription { color: rgba(255,255,255,0.92); }
+
+.case-item.theme-light .case-title { color: #DC473B; }
+.case-item.theme-light .case-features li { color: #1E2F3C !important; }
+.case-item.theme-light .case-features li::before { background: #DC473B; }
+.case-item.theme-light .btn-outline { border-color: #DC473B; color: #DC473B; }
+.case-item.theme-light .btn-outline:hover { background: #DC473B; color: #FFFFFF; }
+.case-item.theme-light .case-subtitle { color: #DC473B; }
+.case-item.theme-light .case-subdescription { color: rgba(30, 47, 60, 0.82); }
+
+.case-item.theme-deep .case-title { color: #7CC0FF; }
+.case-item.theme-deep .case-features li::before { background: #7CC0FF; }
+.case-item.theme-deep .btn-outline { border-color: #7CC0FF; color: #7CC0FF; }
+.case-item.theme-deep .btn-outline:hover { background: #7CC0FF; color: #102436; }
+.case-item.theme-deep .case-subtitle { color: #7CC0FF; }
+.case-item.theme-deep .case-subdescription { color: rgba(255,255,255,0.9); }
+
+.case-item.theme-teal .case-title { color: #0F2735; }
+.case-item.theme-teal .case-features li { color: #0F2735 !important; }
+.case-item.theme-teal .case-features li::before { background: #0F2735; }
+.case-item.theme-teal .btn-outline { border-color: #0F2735; color: #0F2735; }
+.case-item.theme-teal .btn-outline:hover { background: #0F2735; color: #4EC1B6; }
+.case-item.theme-teal .case-subtitle { color: #0F2735; }
+.case-item.theme-teal .case-subdescription { color: rgba(15, 39, 53, 0.82); }
+
+.cases-section.cases-theme-light .section-label {
+    color: #DC473B;
+}
+.cases-section.cases-theme-light .section-line.white {
+    background: #DC473B;
+    opacity: 0.8;
+}
+.cases-section.cases-theme-light .cases-anim-line {
+    background: #DC473B;
+    opacity: 0.9;
+}
+.cases-section.cases-theme-light .cases-logo-mark {
+    background-image: url('../../img/logo-red.svg') !important; 
+}
+
+.cases-section.cases-theme-teal .section-label {
+    color: #1E2F3C;
+}
+.cases-section.cases-theme-teal .section-line{
+    background: #1E2F3C;
+    opacity: 0.8;
+}
+.cases-section.cases-theme-teal .cases-logo-mark {
+    background-image: url('../../img/logo-teal.svg') !important; 
+}
+
+.cases-section.cases-theme-red .section-label,
+.cases-section.cases-theme-dark .section-label,
+.cases-section.cases-theme-deep .section-label {
+    color: #FFFFFF;
+}
 
 /* Linha animada no header dos cases */
 .cases-anim {
