@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const target = document.querySelector('.hero-vr-girl');
         if (!target) return;
         const amp = getAmp(); // metade p/ cima e metade p/ baixo
-        const floatDuration = 3; // mantém sensação original
+        const floatDuration = 4; // mantém sensação original
         if (vrFloatTween) vrFloatTween.kill();
         // Parte do topo (já inicia em -amp), vai até a borda inferior (+amp) e volta
         vrFloatTween = gsap.to(target, {
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         x: 200,
         scale: 1.1,
         duration: 2,
-        delay: 0.4,
+        delay: 0.7,
         ease: 'power3.out',
         onComplete: () => startVrFloat()
     });
@@ -1302,6 +1302,7 @@ document.addEventListener('DOMContentLoaded', function() {
         header.querySelectorAll('.nav-list a').forEach(a => a.addEventListener('click', () => setMenuOpen(false)));
 
         const home = document.querySelector('#home');
+        const footerSection = document.querySelector('.footer-panels-section');
         if (typeof ScrollTrigger !== 'undefined' && home) {
             // Aparece quando o fundo do HERO passa pelo topo da viewport
             ScrollTrigger.create({
@@ -1311,14 +1312,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 onLeaveBack: hide    // subindo: voltou para o hero -> esconde
             });
 
+            if (footerSection) {
+                ScrollTrigger.create({
+                    trigger: footerSection,
+                    start: 'top bottom', // assim que o footer entra na viewport
+                    onEnter: hide,
+                    onLeaveBack: () => {
+                        // só mostra novamente se ainda estivermos além do hero
+                        const pastHero = (window.scrollY || window.pageYOffset) >= (home.offsetHeight - 10);
+                        if (pastHero) show(); else hide();
+                    }
+                });
+            }
+
             // Estado inicial caso a página carregue já rolada
             const initVisible = (window.scrollY || window.pageYOffset) >= (home.offsetHeight - 10);
             if (initVisible) show(); else hide();
         } else {
             // Fallback sem ScrollTrigger
             const heroH = () => (home ? home.offsetHeight : window.innerHeight);
+            const footerTop = () => footerSection ? footerSection.offsetTop : Infinity;
             const onScroll = () => {
                 const y = window.scrollY || window.pageYOffset;
+                const viewportBottom = y + window.innerHeight;
+                if (footerSection && viewportBottom >= footerTop()) {
+                    hide();
+                    return;
+                }
                 if (y >= heroH() - 10) show(); else hide();
             };
             window.addEventListener('scroll', onScroll, { passive: true });
