@@ -1,6 +1,6 @@
 // Registrar plugins do GSAP (protegido caso algum CDN falhe)
 try {
-    gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin, ScrollToPlugin, Observer, Flip, Draggable);
+    gsap.registerPlugin(ScrollTrigger, TextPlugin, MotionPathPlugin, ScrollToPlugin, Observer, Flip, Draggable, SplitText);
 } catch (e) {
     console.warn('GSAP plugins não registrados:', e);
 }
@@ -19,48 +19,23 @@ document.addEventListener('DOMContentLoaded', function() {
         .from('.hero-logo-small', { autoAlpha: 0, y: 14, duration: 0.5 }, 0.3)
         .from('.hero-yellow-circle', { autoAlpha: 0, scale: 0.94, duration: 0.5 }, 0.35);
 
-    // Animação de digitação para o título principal
-    const heroTitleLines = gsap.utils.toArray('.hero-title span');
-    const initHeroTitleHover = () => {
-        const title = document.querySelector('.hero-title');
-        if (!title || title.dataset.hoverInit === 'true') return;
-        // remove restrições usadas durante a animação de digitação
-        title.querySelectorAll('span[data-typing-line="true"]').forEach((lineEl) => {
-            lineEl.style.removeProperty('width');
-            lineEl.style.removeProperty('overflow');
-            lineEl.style.removeProperty('white-space');
-            lineEl.style.removeProperty('min-height');
-            lineEl.style.removeProperty('display');
-            lineEl.removeAttribute('data-typing-line');
-        });
-        // split em spans por caractere (mantém <br> entre linhas)
-        const splitTextNode = (node) => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                const frag = document.createDocumentFragment();
-                const text = node.textContent;
-                for (const ch of text) {
-                    const span = document.createElement('span');
-                    span.className = 'char';
-                    span.textContent = ch;
-                    frag.appendChild(span);
-                }
-                node.parentNode.replaceChild(frag, node);
-            } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'BR') {
-                Array.from(node.childNodes).forEach(splitTextNode);
-            }
-        };
-        Array.from(title.childNodes).forEach(splitTextNode);
+    // Animação suave para o título principal (SplitText)
+    const heroTitle = document.querySelector('.hero-title');
+    let heroTitleSplit = null;
+    const initHeroTitleHover = (chars) => {
+        if (!heroTitle || heroTitle.dataset.hoverInit === 'true') return;
+        const charsArray = Array.isArray(chars) ? chars : Array.from(chars || []);
+        if (!charsArray.length) return;
 
-        const chars = title.querySelectorAll('.char');
         const hoverIn = () => {
-            gsap.to(chars, {
+            gsap.to(charsArray, {
                 duration: 0.4,
                 ease: 'power2.out',
                 stagger: { each: 0.006, from: 'random' },
             });
         };
         const hoverOut = () => {
-            gsap.to(chars, {
+            gsap.to(charsArray, {
                 duration: 0.5,
                 ease: 'power3.out',
                 stagger: { each: 0.004 },
@@ -69,62 +44,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 rotation: 0
             });
         };
-        title.addEventListener('mouseenter', hoverIn);
-        title.addEventListener('mouseleave', hoverOut);
+        heroTitle.addEventListener('mouseenter', hoverIn);
+        heroTitle.addEventListener('mouseleave', hoverOut);
         // acessibilidade: foco com teclado também ativa
-        title.addEventListener('focusin', hoverIn);
-        title.addEventListener('focusout', hoverOut);
-        title.dataset.hoverInit = 'true';
+        heroTitle.addEventListener('focusin', hoverIn);
+        heroTitle.addEventListener('focusout', hoverOut);
+        heroTitle.dataset.hoverInit = 'true';
     };
 
-    const heroTypingTl = gsap.timeline({
-        paused: true,
-        defaults: { ease: 'none' },
-        onComplete: initHeroTitleHover
-    });
-
-    heroTitleLines.forEach((line, index) => {
-        const fullText = (line.textContent || '').trim();
-        if (!fullText.length) return;
-
-        line.dataset.typingLine = 'true';
-        // garante que o span mantenha a largura final durante a digitação
-        const prevDisplay = line.style.display;
-        line.style.display = 'inline-block';
-        line.style.whiteSpace = 'nowrap';
-        const bounds = line.getBoundingClientRect();
-        const fullWidth = bounds.width || line.scrollWidth;
-        const fullHeight = bounds.height || line.scrollHeight;
-        if (fullWidth) {
-            line.style.width = `${fullWidth}px`;
+    const createHeroTitleAnimation = () => {
+        if (!heroTitle) return null;
+        if (typeof SplitText === 'undefined') {
+            // fallback: mantém hover básico sem animação de entrada
+            initHeroTitleHover(heroTitle.querySelectorAll('span'));
+            return null;
         }
-        line.style.overflow = 'hidden';
-        if (fullHeight) {
-            line.style.minHeight = `${fullHeight}px`;
+        heroTitleSplit = new SplitText(heroTitle, {
+            type: 'lines,words,chars',
+            charsClass: 'char',
+            wordsClass: 'hero-word',
+            linesClass: 'hero-line'
+        });
+
+        if (heroTitleSplit.lines && heroTitleSplit.lines.length) {
+            gsap.set(heroTitleSplit.lines, { overflow: 'hidden', paddingBottom: '0.05em' });
         }
 
-        line.textContent = '';
+        const chars = heroTitleSplit.chars;
+        if (!chars || !chars.length) return null;
 
-        const stepsCount = Math.max(1, fullText.length);
-        const typeDuration = Math.max(0.9, Math.min(3.2, fullText.length * 0.14));
+        const tl = gsap.timeline({
+            paused: true,
+            defaults: { ease: 'power2.out' },
+            onComplete: () => initHeroTitleHover(chars)
+        });
 
-        heroTypingTl.to(line, {
-            text: fullText,
-            duration: typeDuration,
-            ease: `steps(${stepsCount})`,
-            onStart: () => line.classList.add('typing'),
-            onComplete: () => {
-                line.classList.remove('typing');
-                line.style.display = prevDisplay;
+        tl.from(chars, {
+            yPercent: 45,
+            autoAlpha: 0,
+            duration: 0.58,
+            ease: 'power3.out',
+            transformOrigin: '50% 100%',
+            stagger: {
+                each: 0.024,
+                from: 'start'
             }
-        }, index === 0 ? 0 : '+=0.25');
-    });
+        }, 0);
 
-    if (heroTitleLines.length) {
-        tlHeroIn.add(() => heroTypingTl.restart(true), 0.25);
-    } else {
-        // Caso não existam spans para a digitação, ainda inicializa o hover
-        initHeroTitleHover();
+        return tl;
+    };
+
+    const heroTitleIntroTl = createHeroTitleAnimation();
+    if (heroTitleIntroTl) {
+        tlHeroIn.add(() => heroTitleIntroTl.restart(true), 0.18);
     }
 
     // Lupa (ícone dentro da ampola) girando no centro
@@ -259,81 +231,6 @@ document.addEventListener('DOMContentLoaded', function() {
             gsap.to(scan, { x: 200, duration: 1.8, ease: 'sine.inOut', yoyo: true, repeat: -1, opacity: 1 });
         });
     }
-
-    // ================================
-    // Guitar Hero lanes (SVG inline)
-    // ================================
-    (function initGuitarHeroLanes(){
-        const svg = document.querySelector('.hero-gh');
-        if (!svg) return;
-        const lanes = 12; // número de trilhos
-        const w = 1440;
-        const h = svg.getBoundingClientRect().height || 180;
-        svg.setAttribute('viewBox', `0 0 ${w} ${Math.max(120,h)}`);
-
-        // Limpa conteúdo anterior
-        while (svg.firstChild) svg.removeChild(svg.firstChild);
-
-        // Gradiente de glow
-        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-        grad.setAttribute('id','laneGlow');
-        grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
-        grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
-        const s1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop'); s1.setAttribute('offset','0%'); s1.setAttribute('stop-color','#FEE644'); s1.setAttribute('stop-opacity','0.9');
-        const s2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop'); s2.setAttribute('offset','100%'); s2.setAttribute('stop-color','#FEE644'); s2.setAttribute('stop-opacity','0.1');
-        grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
-
-        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.setAttribute('fill','none');
-        g.setAttribute('stroke','url(#laneGlow)');
-        g.setAttribute('stroke-width','6');
-        g.setAttribute('stroke-linecap','round');
-        svg.appendChild(g);
-
-        // Perspectiva fake: convergir para o centro
-        const baseY = (Math.max(120,h)) - 6;
-        const horizonY = 20;
-        const leftStart = -120; // extrapola para fora para dar perspectiva
-        const rightStart = w + 120;
-        for (let i=0;i<lanes;i++){
-            const t = i/(lanes-1);
-            const x1 = leftStart + (w+240)*t*0.88; // ligeiro aperto para posicionar sob a VR
-            const x2 = w/2 + (x1 - w/2)*0.2; // converge em direção ao centro
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('class',`lane lane-${i+1}`);
-            path.setAttribute('d',`M ${x1} ${baseY} L ${x2} ${horizonY}`);
-            path.setAttribute('opacity','0.2');
-            g.appendChild(path);
-        }
-
-        // Linha “scanner” que varre
-        const scan = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        scan.setAttribute('x','0'); scan.setAttribute('y', String(horizonY));
-        scan.setAttribute('width', String(w)); scan.setAttribute('height', String(baseY - horizonY));
-        scan.setAttribute('fill','url(#laneGlow)');
-        scan.setAttribute('opacity','0.0');
-        svg.appendChild(scan);
-
-        // Animações
-        const laneEls = Array.from(svg.querySelectorAll('.lane'));
-        // 1) Pulso sequencial nas lanes
-        gsap.to(laneEls, {
-            opacity: 1,
-            duration: 0.4,
-            stagger: { each: 0.08, yoyo: true, repeat: -1 },
-            ease: 'sine.inOut'
-        });
-
-        // 2) Scanner varrendo
-        gsap.to(scan, {
-            opacity: 0.35,
-            duration: 0.8,
-            ease: 'sine.in',
-            yoyo: true,
-            repeat: -1
-        });
-    })();
 
     // ====================================
     // Numbers Section Animations - NOVA ESTRUTURA
