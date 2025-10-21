@@ -24,6 +24,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const initHeroTitleHover = () => {
         const title = document.querySelector('.hero-title');
         if (!title || title.dataset.hoverInit === 'true') return;
+        // remove restrições usadas durante a animação de digitação
+        title.querySelectorAll('span[data-typing-line="true"]').forEach((lineEl) => {
+            lineEl.style.removeProperty('width');
+            lineEl.style.removeProperty('overflow');
+            lineEl.style.removeProperty('white-space');
+            lineEl.style.removeProperty('min-height');
+            lineEl.style.removeProperty('display');
+            lineEl.removeAttribute('data-typing-line');
+        });
         // split em spans por caractere (mantém <br> entre linhas)
         const splitTextNode = (node) => {
             if (node.nodeType === Node.TEXT_NODE) {
@@ -48,10 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 duration: 0.4,
                 ease: 'power2.out',
                 stagger: { each: 0.006, from: 'random' },
-                // bagunça sutil: pequenos offsets e rotações
-                x: () => gsap.utils.random(-2, 2),
-                y: () => gsap.utils.random(-4, 4),
-                rotation: () => gsap.utils.random(-6, 6),
             });
         };
         const hoverOut = () => {
@@ -82,17 +87,36 @@ document.addEventListener('DOMContentLoaded', function() {
         const fullText = (line.textContent || '').trim();
         if (!fullText.length) return;
 
+        line.dataset.typingLine = 'true';
+        // garante que o span mantenha a largura final durante a digitação
+        const prevDisplay = line.style.display;
+        line.style.display = 'inline-block';
+        line.style.whiteSpace = 'nowrap';
+        const bounds = line.getBoundingClientRect();
+        const fullWidth = bounds.width || line.scrollWidth;
+        const fullHeight = bounds.height || line.scrollHeight;
+        if (fullWidth) {
+            line.style.width = `${fullWidth}px`;
+        }
+        line.style.overflow = 'hidden';
+        if (fullHeight) {
+            line.style.minHeight = `${fullHeight}px`;
+        }
+
         line.textContent = '';
 
         const stepsCount = Math.max(1, fullText.length);
-        const typeDuration = Math.max(0.8, Math.min(3, fullText.length * 0.12));
+        const typeDuration = Math.max(0.9, Math.min(3.2, fullText.length * 0.14));
 
         heroTypingTl.to(line, {
             text: fullText,
             duration: typeDuration,
             ease: `steps(${stepsCount})`,
             onStart: () => line.classList.add('typing'),
-            onComplete: () => line.classList.remove('typing')
+            onComplete: () => {
+                line.classList.remove('typing');
+                line.style.display = prevDisplay;
+            }
         }, index === 0 ? 0 : '+=0.25');
     });
 

@@ -2325,8 +2325,7 @@ img {
     position: relative; 
     z-index: 2;
     width: min(80vw, 980px); 
-    opacity: 1; 
-    filter: drop-shadow(0 10px 30px rgba(0,0,0,.25)); 
+    opacity: 1;
     }
 .footer-logo-giant img { 
     width: 100%; 
