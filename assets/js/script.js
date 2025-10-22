@@ -691,6 +691,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Empilhamento dos cards (stack) centralizados
     const servicesCardsContainer = document.querySelector('.cards') || document.querySelector('.services-cards');
     const servicesCards = gsap.utils.toArray('.card').length ? gsap.utils.toArray('.card') : gsap.utils.toArray('.service-card');
+    const servicesCompactMM = window.matchMedia('(max-width: 820px)');
+    const stackTweens = [];
+    const getStackScale = () => (servicesCompactMM.matches ? 0.985 : 0.92);
     if (servicesCardsContainer && servicesCards.length) {
         // Centralização vertical usa --card-height no CSS (via top: calc(...))
         const updateCardsMetrics = () => {
@@ -712,6 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const inner = card.querySelector('.card__inner') || card;
             const numberEl = card.querySelector('.card__number') || card.querySelector('.card-number');
             const imageEl = card.querySelector('.card__image-container') || card.querySelector('.card-image');
+            const stackScale = getStackScale();
 
             // Ordem de sobreposição: os próximos ficam acima
             card.style.zIndex = String(index + 1);
@@ -765,20 +769,30 @@ document.addEventListener('DOMContentLoaded', function() {
             // Efeito stack: enquanto o próximo card entra, o atual reduz escala e brilho
             if (index < servicesCards.length - 1 && inner) {
                 const nextCard = servicesCards[index + 1];
-                const toScale = 0.92; // redução leve
-                gsap.to(inner, {
+                const tween = gsap.to(inner, {
                     scrollTrigger: {
                         trigger: nextCard,
                         start: 'top bottom',
                         end: 'top top',
                         scrub: true
                     },
-                    scale: toScale,
+                    scale: stackScale,
                     filter: 'brightness(0.85)',
-                    transformOrigin: 'top center',
+                    transformOrigin: servicesCompactMM.matches ? 'center top' : 'top center',
                     ease: 'none'
                 });
+                stackTweens.push(tween);
             }
+        });
+
+        servicesCompactMM.addEventListener('change', () => {
+            const nextScale = getStackScale();
+            stackTweens.forEach(tween => {
+                tween.vars.scale = nextScale;
+                tween.vars.transformOrigin = servicesCompactMM.matches ? 'center top' : 'top center';
+                tween.invalidate();
+            });
+            ScrollTrigger.refresh();
         });
     }
 

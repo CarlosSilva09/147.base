@@ -1064,6 +1064,9 @@ img {
     z-index: 10;
     overflow: hidden;
 }
+.about-arrow-mobile {
+    display: none;
+}
 
 .about-arrow-bg {
     display: block;
@@ -1149,6 +1152,15 @@ img {
     .about-img-2 {
         margin-top: 24px;
     }
+    .about-arrow {
+        width: 86px;
+        height: auto;
+        top: 228px;
+        left: 50%;
+        right: auto;
+        bottom: auto;
+        transform: translate(-50%, -50%);
+    }
     .about-text {
         padding-top: 0;
     }
@@ -1162,18 +1174,6 @@ img {
     }
     .section-label-red {
         font-size: 18px;
-    }
-}
-
-@media (max-width: 600px) {
-    .about-arrow {
-        width: 86px;
-        height: auto;
-        top: 220px;
-        left: 50%;
-        right: auto;
-        bottom: auto;
-        transform: translate(-50%, -50%);
     }
 }
 .section-label-red{
@@ -1686,11 +1686,19 @@ img {
         flex-direction: column;
         gap: 0;
         position: relative;
+        padding-bottom: max(220px, calc(var(--card-height, 420px) * 0.6));
+        --card-mobile-offset: 0px;
+        align-items: center;
+        width: 100%;
     }
     .card {
         position: sticky;
-        top: 100px;
-        margin-bottom: 20px;
+        top: clamp(64px, calc((100vh - var(--card-height, 420px)) / 2), 140px);
+        margin-bottom: clamp(48px, 12vw, 96px);
+        width: 100%;
+        max-width: 420px;
+        margin-inline: auto;
+        transform-origin: center top;
     }
     .card:last-child {
         margin-bottom: 0;
@@ -1715,11 +1723,19 @@ img {
         flex-direction: column;
         gap: 0;
         position: relative;
+        padding-bottom: max(220px, calc(var(--card-height, 420px) * 0.6));
+        --card-mobile-offset: 0px;
+        align-items: center;
+        width: 100%;
     }
     .card {
         position: sticky;
-        top: 100px;
-        margin-bottom: 20px;
+        top: clamp(56px, calc((100vh - var(--card-height, 420px)) / 2), 120px);
+        margin-bottom: clamp(48px, 14vw, 96px);
+        width: 100%;
+        max-width: 420px;
+        margin-inline: auto;
+        transform-origin: center top;
     }
     .card:last-child {
         margin-bottom: 0;
@@ -1728,12 +1744,15 @@ img {
         flex-direction: column; 
         height: auto; 
         padding: 32px 24px;
+        margin-left: var(--card-mobile-offset, 0px);
+        width: calc(100% - var(--card-mobile-offset, 0px));
         box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.24);
     }
-    .card--teal .card__inner, 
-    .card--white .card__inner { 
-        margin-left: 0; 
-        width: 100%; 
+    .card--teal .card__inner,
+    .card--white .card__inner,
+    .card--blue .card__inner {
+        margin-left: 0;
+        width: 100%;
     }
     .card__number {
         font-size: clamp(56px, 14vw, 72px);
@@ -1859,14 +1878,18 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: visible;
 }
 
 .mockup-img {
-    width: clamp(680px, 100%, 1600px);
+    width: calc(100% + clamp(140px, 12vw, 280px));
+    max-width: 1600px;
+    min-width: clamp(640px, 100%, 960px);
     aspect-ratio: 604 / 530;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: visible;
 }
 .mockup-img img {
     width: 100%;
@@ -1940,7 +1963,7 @@ img {
 }
 
 .case-buttons {
-    display: flex;
+    display: none;
     gap: 20px;
 }
 
@@ -2060,6 +2083,13 @@ img {
         order: -1;
         padding: 0;
         justify-content: flex-start;
+        overflow: hidden;
+    }
+
+    .mockup-img {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
     }
 
     .case-info {
@@ -2092,6 +2122,10 @@ img {
 
     .case-title {
         font-size: clamp(26px, 7vw, 34px);
+    }
+    .case-subdescription{
+        font-size: clamp(16px, 4vw, 20px);
+        margin-bottom: 28px;
     }
 
     .case-line {
@@ -2597,10 +2631,12 @@ img {
   .footer-cta-text {
     font-size: clamp(20px, 5vw, 32px);
   }
-  .footer-logo-giant { 
-    width: min(95vw, 600px);
-    opacity: 0.10;
-  }
+.footer-panels-pin .footer-logo-giant img{
+    opacity: var(--logo-img-opacity);
+}
+.footer-panels-pin .footer-logo-giant::before {
+  opacity: 0.24;
+}
 }
 
 /* SVG das lanes tipo Guitar Hero */
