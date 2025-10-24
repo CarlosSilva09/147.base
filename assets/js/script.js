@@ -689,12 +689,108 @@ document.addEventListener('DOMContentLoaded', function() {
     })();
 
     // Empilhamento dos cards (stack) centralizados
-    const servicesCardsContainer = document.querySelector('.cards') || document.querySelector('.services-cards');
-    const servicesCards = gsap.utils.toArray('.card').length ? gsap.utils.toArray('.card') : gsap.utils.toArray('.service-card');
+    const servicesCardsContainer = document.querySelector('.services-section .cards') || document.querySelector('.services-cards');
+    const servicesCards = servicesCardsContainer ? gsap.utils.toArray(servicesCardsContainer.querySelectorAll('.card, .service-card')) : [];
+    const servicesProgress = document.querySelector('.services-progress');
+    const servicesProgressCurrent = servicesProgress ? servicesProgress.querySelector('.services-progress-current') : null;
+    const servicesProgressTotal = servicesProgress ? servicesProgress.querySelector('.services-progress-total') : null;
+    const servicesProgressStepsContainer = servicesProgress ? servicesProgress.querySelector('.services-progress-steps') : null;
+    let servicesProgressSteps = [];
     const servicesCompactMM = window.matchMedia('(max-width: 820px)');
     const stackTweens = [];
+
+    const updateServicesProgress = (index, { immediate = false } = {}) => {
+        if (!servicesProgress || !servicesCards.length) return;
+
+        const total = servicesCards.length;
+        const clampedIndex = gsap.utils.clamp(0, total - 1, index);
+
+        if (servicesProgressCurrent) {
+            servicesProgressCurrent.textContent = String(clampedIndex + 1);
+        }
+        if (servicesProgressTotal) {
+            servicesProgressTotal.textContent = String(total);
+        }
+
+        if (servicesProgressSteps.length) {
+            servicesProgressSteps.forEach((step, stepIdx) => {
+                step.classList.toggle('is-active', stepIdx === clampedIndex);
+                step.classList.toggle('is-complete', stepIdx < clampedIndex);
+            });
+        }
+
+        if (servicesProgress) {
+            servicesProgress.classList.toggle('services-progress--started', clampedIndex > 0);
+        }
+    };
     const getStackScale = () => (servicesCompactMM.matches ? 0.985 : 0.92);
     if (servicesCardsContainer && servicesCards.length) {
+        if (servicesProgress) {
+            servicesProgress.style.display = servicesCards.length > 1 ? '' : 'none';
+            gsap.set(servicesProgress, { autoAlpha: 0, y: 12 });
+
+            if (typeof ScrollTrigger !== 'undefined') {
+                ScrollTrigger.create({
+                    trigger: servicesCardsContainer,
+                    start: 'top 80%',
+                    onEnter: () => gsap.to(servicesProgress, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power2.out' }),
+                    onEnterBack: () => gsap.to(servicesProgress, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power2.out' }),
+                    onLeaveBack: () => gsap.to(servicesProgress, { autoAlpha: 0, y: 12, duration: 0.25, ease: 'power2.in' })
+                });
+                ScrollTrigger.create({
+                    trigger: servicesCardsContainer,
+                    start: 'bottom top+=120',
+                    onEnter: () => gsap.to(servicesProgress, { autoAlpha: 0, y: 12, duration: 0.35, ease: 'power2.in' }),
+                    onLeaveBack: () => gsap.to(servicesProgress, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power2.out' })
+                });
+            } else {
+                gsap.set(servicesProgress, { autoAlpha: 1, y: 0 });
+            }
+        }
+        if (servicesProgressStepsContainer) {
+            servicesProgressStepsContainer.innerHTML = '';
+            servicesProgressSteps = servicesCards.map(() => {
+                const step = document.createElement('span');
+                step.className = 'services-progress-step';
+                servicesProgressStepsContainer.appendChild(step);
+                return step;
+            });
+        } else {
+            servicesProgressSteps = [];
+        }
+        updateServicesProgress(0, { immediate: true });
+
+        let activeServiceIndex = 0;
+        const serviceStepTriggers = [];
+        const setActiveService = (idx, opts) => {
+            const nextIndex = gsap.utils.clamp(0, servicesCards.length - 1, idx);
+            if (nextIndex === activeServiceIndex && !(opts && opts.force)) return;
+            activeServiceIndex = nextIndex;
+            updateServicesProgress(activeServiceIndex, opts);
+        };
+
+        servicesCards.forEach((card, index) => {
+            if (typeof ScrollTrigger === 'undefined') return;
+            const st = ScrollTrigger.create({
+                trigger: card,
+                start: 'center center',
+                end: '+=1',
+                onEnter: () => setActiveService(index),
+                onEnterBack: () => setActiveService(index),
+                onLeave: () => {
+                    if (index === servicesCards.length - 1 && servicesProgress) {
+                        gsap.to(servicesProgress, { autoAlpha: 0, y: 14, duration: 0.3, ease: 'power2.in' });
+                    }
+                },
+                onLeaveBack: () => {
+                    if (index === servicesCards.length - 1 && servicesProgress) {
+                        gsap.to(servicesProgress, { autoAlpha: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+                    }
+                }
+            });
+            serviceStepTriggers.push(st);
+        });
+
         // Centralização vertical usa --card-height no CSS (via top: calc(...))
         const updateCardsMetrics = () => {
             const firstInner = servicesCards[0].querySelector('.card__inner') || servicesCards[0];
@@ -794,6 +890,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             ScrollTrigger.refresh();
         });
+
+        if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.addEventListener('refresh', () => {
+                setActiveService(activeServiceIndex, { immediate: true, force: true });
+            });
+        }
     }
 
 
