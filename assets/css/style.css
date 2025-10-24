@@ -1524,6 +1524,66 @@ img {
 /* Aumenta a largura útil apenas nesta seção para caber texto + imagem */
 .services-section .container { padding: 0 20px; }
 
+.services-progress {
+    position: sticky;
+    top: clamp(64px, 16vh, 140px);
+    z-index: 12;
+    max-width: min(680px, 82vw);
+    margin: clamp(28px, 6vh, 48px) auto clamp(52px, 12vh, 96px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    --services-progress-count: rgba(255, 255, 255, 0.8);
+    --services-progress-step: rgba(255, 255, 255, 0.28);
+    --services-progress-step-active: #112F3F;
+    --services-progress-step-complete: rgba(17, 47, 63, 0.7);
+}
+
+.services-progress-count {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    font-weight: 600;
+    font-size: clamp(12px, 1.3vw, 15px);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--services-progress-count);
+}
+
+.services-progress-bar {
+    width: 100%;
+}
+
+.services-progress-steps {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: min(780px, 90vw);
+}
+
+.services-progress-step {
+    width: clamp(56px, 9vw, 92px);
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.26);
+    opacity: 0.45;
+    transition: opacity 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.services-progress-step.is-complete {
+    opacity: 1;
+    background: rgba(15, 39, 53, 0.75);
+}
+
+.services-progress-step.is-active {
+    opacity: 1;
+    background: #162F3E;
+    box-shadow: 0 0 16px rgba(17, 47, 63, 0.3);
+}
+
 /* Brilho de linha sutil sob o título dos serviços */
 .services-title::after {
         content: "";
@@ -1713,6 +1773,18 @@ img {
     }
     .services-section .container {
         padding: 0 24px;
+    }
+    .services-progress {
+        margin: 20px auto 44px;
+    }
+    .services-progress-count {
+        font-size: 12px;
+    }
+    .services-progress-steps {
+        max-width: 100%;
+    }
+    .services-progress-step {
+        flex-basis: clamp(42px, 15vw, 64px);
     }
     .services-title {
         font-size: clamp(48px, 12vw, 72px);
