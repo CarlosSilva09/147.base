@@ -812,8 +812,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const caseItems = casesSection ? gsap.utils.toArray('.cases-list .case-item') : [];
     const caseLines = caseItems.map(item => item.querySelector('.line-1'));
     const fallbackCasesBg = casesSection ? window.getComputedStyle(casesSection).backgroundColor : '#1E2F3C';
+    const casesProgress = casesSection ? casesSection.querySelector('.cases-progress') : null;
+    const casesProgressFill = casesProgress ? casesProgress.querySelector('.cases-progress-fill') : null;
+    const casesProgressCurrent = casesProgress ? casesProgress.querySelector('.cases-progress-current') : null;
+    const casesProgressTotal = casesProgress ? casesProgress.querySelector('.cases-progress-total') : null;
+    const casesProgressStepsContainer = casesProgress ? casesProgress.querySelector('.cases-progress-steps') : null;
+    let casesProgressSteps = [];
     let currentCaseBg = null;
     const CASE_THEMES = ['dark','red','light','deep','teal','yellow','default'];
+
+    const updateCasesProgress = (index, { immediate = false } = {}) => {
+        const total = caseItems.length;
+        if (!casesProgress || total === 0) return;
+
+        if (casesProgressCurrent) {
+            casesProgressCurrent.textContent = String(Math.min(total, index + 1));
+        }
+        if (casesProgressTotal) {
+            casesProgressTotal.textContent = String(total);
+        }
+
+        if (casesProgressSteps.length) {
+            casesProgressSteps.forEach((step, stepIdx) => {
+                step.classList.toggle('is-active', stepIdx === index);
+                step.classList.toggle('is-complete', stepIdx < index);
+            });
+        }
+
+        if (casesProgressFill) {
+            const maxIndex = Math.max(1, total - 1);
+            const targetRatio = total > 1 ? index / maxIndex : 1;
+            gsap.to(casesProgressFill, {
+                width: `${(targetRatio * 100).toFixed(3)}%`,
+                duration: immediate ? 0 : 0.45,
+                ease: 'power2.out',
+                overwrite: 'auto'
+            });
+        }
+    };
 
     const applyCaseTheme = (item) => {
         if (!casesSection || !item) return;
@@ -866,9 +902,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (casesSection && caseItems.length) {
         const mm = gsap.matchMedia();
+
+        if (casesProgress) {
+            casesProgress.style.display = caseItems.length > 1 ? '' : 'none';
+        }
+        if (casesProgressStepsContainer) {
+            casesProgressStepsContainer.innerHTML = '';
+            const totalSteps = caseItems.length;
+            casesProgressSteps = caseItems.map((_, idx) => {
+                const step = document.createElement('span');
+                step.className = 'cases-progress-step';
+                if (totalSteps > 1) {
+                    const ratio = idx / (totalSteps - 1);
+                    step.style.left = `${(ratio * 100).toFixed(3)}%`;
+                } else {
+                    step.style.left = '0%';
+                }
+                casesProgressStepsContainer.appendChild(step);
+                return step;
+            });
+        } else {
+            casesProgressSteps = [];
+        }
+        if (casesProgressFill) {
+            gsap.set(casesProgressFill, { width: '0%' });
+        }
+        updateCasesProgress(0, { immediate: true });
         setCaseBackground(caseItems[0], true);
 
-    mm.add('(min-width: 0px)', () => {
+        mm.add('(min-width: 0px)', () => {
             const totalCases = caseItems.length;
             let activeIndex = 0;
 
@@ -884,22 +946,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const trigger = ScrollTrigger.create({
                 trigger: casesSection,
                 start: 'top top',
-                end: () => '+=' + window.innerHeight * totalCases,
+                end: () => '+=' + Math.max(window.innerHeight * 0.75, 420) * Math.max(1, totalCases - 1),
                 pin: true,
                 anticipatePin: 1,
-                scrub: true,
+                scrub: false,
                 snap: totalCases > 1 ? {
                     snapTo: (value) => {
                         const snapIndex = Math.round(value * (totalCases - 1));
                         return (totalCases - 1) ? snapIndex / (totalCases - 1) : 0;
                     },
-                    duration: 0.5,
-                    ease: 'power1.inOut'
+                    duration: 0.55,
+                    delay: 0,
+                    ease: 'power2.inOut'
                 } : false,
                 onUpdate: self => {
-                    const raw = self.progress * totalCases;
-                    const newIndex = Math.min(totalCases - 1, Math.floor(raw));
-                    const segProgress = gsap.utils.clamp(0, 1, raw - newIndex);
+                    const hasMultiple = totalCases > 1;
+                    let newIndex = activeIndex;
+
+                    if (hasMultiple) {
+                        const maxIndex = totalCases - 1;
+                        const progress = self.progress;
+                        let candidate = activeIndex;
+
+                        while (candidate < maxIndex && progress >= ((candidate + 0.5) / maxIndex)) {
+                            candidate++;
+                        }
+                        while (candidate > 0 && progress <= ((candidate - 0.5) / maxIndex)) {
+                            candidate--;
+                        }
+
+                        newIndex = candidate;
+                    } else {
+                        newIndex = 0;
+                    }
 
                     if (newIndex !== activeIndex) {
                         activeIndex = newIndex;
@@ -910,22 +989,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                         animateCaseEntry(caseItems[activeIndex]);
                         setCaseBackground(caseItems[activeIndex]);
+                        updateCasesProgress(activeIndex);
                         logRed(`case ${activeIndex + 1} active`);
                     }
 
                     caseLines.forEach((line, idx) => {
                         if (!line) return;
-                        if (idx < activeIndex) {
-                            gsap.set(line, { scaleX: 1 });
-                        } else if (idx === activeIndex) {
-                            gsap.set(line, { scaleX: segProgress });
-                        } else {
-                            gsap.set(line, { scaleX: 0 });
-                        }
+                        gsap.set(line, { scaleX: idx <= activeIndex ? 1 : 0 });
                     });
-
                     if (redProgress) {
-                        redProgress.innerText = 'progress: ' + segProgress.toFixed(3);
+                        redProgress.innerText = 'index: ' + (activeIndex + 1);
                     }
                 },
                 onRefresh: () => {
@@ -935,9 +1008,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     caseLines.forEach((line, idx) => {
                         if (!line) return;
-                        gsap.set(line, { scaleX: idx < activeIndex ? 1 : idx === activeIndex ? 0 : 0 });
+                        gsap.set(line, { scaleX: idx <= activeIndex ? 1 : 0 });
                     });
                     setCaseBackground(caseItems[activeIndex], true);
+                    updateCasesProgress(activeIndex, { immediate: true });
                 }
             });
 
@@ -950,6 +1024,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 caseLines.forEach(line => line && gsap.set(line, { clearProps: 'all' }));
                 setCaseBackground(caseItems[0], true);
+                updateCasesProgress(0, { immediate: true });
             };
         });
     }
