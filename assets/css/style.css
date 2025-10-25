@@ -1776,6 +1776,7 @@ img {
     }
     .services-progress {
         margin: 20px auto 44px;
+        top: 71px;
     }
     .services-progress-count {
         font-size: 12px;
