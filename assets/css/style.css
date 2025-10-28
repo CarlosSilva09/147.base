@@ -3067,4 +3067,8 @@ img {
     .rd-partner-accent-top {
         right: clamp(-16px, 6vw, 80px);
     }
+    .rd-partner-info p{
+        text-align: center;
+    }
 }
+    

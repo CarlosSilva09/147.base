@@ -1303,24 +1303,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const videoSrc = iframe.dataset.src;
         if (!videoSrc) return;
 
-        const loadVideo = () => {
-            if (iframe.dataset.loaded === 'true') return;
+        if (iframe.dataset.loaded !== 'true') {
             iframe.src = videoSrc;
             iframe.dataset.loaded = 'true';
-        };
-
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        loadVideo();
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.45 });
-            observer.observe(section);
-        } else {
-            loadVideo();
         }
     })();
 
