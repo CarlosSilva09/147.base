@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====================================
     // About Section Animations
     // ====================================
-    const ABOUT_ARROW_FLOAT_AMP = 18;
+    /*const ABOUT_ARROW_FLOAT_AMP = 18;
     let aboutArrowFloatTween = null;
     const startAboutArrowFloat = () => {
         const arrow = document.querySelector('.about-arrow');
@@ -538,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function() {
         duration: 0.8,
         delay: 0.2,
         ease: 'power2.out'
-    });
+    });*/
 
     // ====================================
     // Team Section Animations
@@ -1295,6 +1295,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====================================
     // Localização - Animações de entrada
     // ====================================
+    (function initLocalizacaoVideoAutoplay(){
+        const section = document.querySelector('.localizacao-section');
+        const iframe = section ? section.querySelector('.localizacao-video') : null;
+        if (!section || !iframe) return;
+
+        const videoSrc = iframe.dataset.src;
+        if (!videoSrc) return;
+
+        const loadVideo = () => {
+            if (iframe.dataset.loaded === 'true') return;
+            iframe.src = videoSrc;
+            iframe.dataset.loaded = 'true';
+        };
+
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        loadVideo();
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.45 });
+            observer.observe(section);
+        } else {
+            loadVideo();
+        }
+    })();
+
     gsap.from('.localizacao-title', {
         scrollTrigger: { trigger: '.localizacao-section', start: 'top 70%', toggleActions: 'play none none reverse' },
         opacity: 0, x: -60, duration: 1, ease: 'power3.out'
@@ -1313,7 +1342,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Parallax leve no BG da Localização
-    gsap.to('.localizacao-bg img', {
+    gsap.to('.localizacao-bg .localizacao-video', {
         scrollTrigger: { trigger: '.localizacao-section', start: 'top bottom', end: 'bottom top', scrub: 1 },
         y: -60, ease: 'none'
     });
@@ -1414,15 +1443,49 @@ document.addEventListener('DOMContentLoaded', function() {
         header.querySelectorAll('.nav-list a').forEach(a => a.addEventListener('click', () => setMenuOpen(false)));
 
         const home = document.querySelector('#home');
+        const localizacaoSection = document.querySelector('.localizacao-section');
         const footerSection = document.querySelector('.footer-panels-section');
+        const toggleLocalizacaoHeader = (active) => {
+            document.body.classList.toggle('is-in-localizacao', !!active);
+            if (active) {
+                hide();
+                setMenuOpen(false);
+            }
+        };
+        const ensureHeaderAfterHero = () => {
+            const pastHero = (window.scrollY || window.pageYOffset) >= (home ? home.offsetHeight - 10 : 0);
+            if (pastHero) show(); else hide();
+        };
         if (typeof ScrollTrigger !== 'undefined' && home) {
             // Aparece quando o fundo do HERO passa pelo topo da viewport
             ScrollTrigger.create({
                 trigger: home,
                 start: 'bottom top',
                 onEnter: show,       // descendo: passou do hero -> mostra
-                onLeaveBack: hide    // subindo: voltou para o hero -> esconde
+              onLeaveBack: hide    // subindo: voltou para o hero -> esconde
             });
+           // COISA NOVA 
+            if (localizacaoSection && footerSection) {
+                ScrollTrigger.create({
+                    trigger: localizacaoSection,
+                    start: 'top bottom',
+                    endTrigger: footerSection,
+                    end: 'top top',
+                    onEnter: () => toggleLocalizacaoHeader(true),
+                    onEnterBack: () => toggleLocalizacaoHeader(true),
+                    onUpdate: (self) => {
+                        if (self.isActive) toggleLocalizacaoHeader(true);
+                    },
+                    onLeave: () => {
+                        toggleLocalizacaoHeader(false);
+                        hide();
+                    },
+                    onLeaveBack: () => {
+                        toggleLocalizacaoHeader(false);
+                        ensureHeaderAfterHero();
+                    }
+                });
+            }
 
             if (footerSection) {
                 ScrollTrigger.create({
