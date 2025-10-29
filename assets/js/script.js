@@ -1750,6 +1750,70 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
 
   // ====================================
+  // RD Partner Section Entrance Animation
+  // ====================================
+  (function initRdPartnerAnimation() {
+    const section = document.querySelector(".rd-partner-section");
+    if (!section) return;
+
+    const image = section.querySelector(".rd-partner-image");
+    const badge = section.querySelector(".rd-partner-badge");
+    const logos = section.querySelector(".rd-partner-logos");
+    const title = section.querySelector(".rd-partner-title");
+    const paragraphs = section.querySelectorAll(".rd-partner-info p");
+
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { duration: 0.6, ease: "power2.out" },
+    });
+
+    tl.from(image, { x: -32, autoAlpha: 0 })
+      .from(badge, { scale: 0.6, autoAlpha: 0, ease: "back.out(1.5)" }, "-=0.3")
+      .from(logos, { y: 24, autoAlpha: 0 }, "-=0.25")
+      .from(title, { y: 16, autoAlpha: 0 }, "-=0.25")
+      .from(paragraphs, { y: 20, autoAlpha: 0, stagger: 0.1 }, "-=0.2");
+
+    const floatTweens = [
+      image
+        ? gsap.to(image, {
+            y: "+=10",
+            duration: 5,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+            paused: true,
+          })
+        : null,
+    ].filter(Boolean);
+
+    const pauseFloat = () => {
+      floatTweens.forEach((tween) => tween.pause());
+    };
+
+    tl.eventCallback("onComplete", () =>
+      floatTweens.forEach((tween) => tween.play())
+    );
+
+    const playTimeline = () => {
+      pauseFloat();
+      tl.restart();
+    };
+
+    if (typeof ScrollTrigger !== "undefined") {
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top 75%",
+        onEnter: playTimeline,
+        onEnterBack: playTimeline,
+        onLeave: pauseFloat,
+        onLeaveBack: pauseFloat,
+      });
+    } else {
+      playTimeline();
+    }
+  })();
+
+  // ====================================
   // Scrollspy: marcar link ativo baseado na seção
   // ====================================
   (function initScrollSpy() {
